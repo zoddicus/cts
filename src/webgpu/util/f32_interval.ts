@@ -276,7 +276,6 @@ function roundAndFlushTernaryToInterval(
  * @param op operation defining the function being run
  * @returns a span over all of the outputs of op.impl
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function runPointOp(x: F32Interval, op: PointToIntervalOp): F32Interval {
   if (x.isPoint()) {
     return roundAndFlushPointToInterval(x.begin, op);
@@ -391,4 +390,15 @@ export function ulpInterval(n: number, numULP: number): F32Interval {
       return new F32Interval(impl_n - numULP * ulp, impl_n + numULP * ulp);
     },
   });
+}
+
+/** Calculate an acceptance interval for abs(n) */
+export function absInterval(n: number): F32Interval {
+  const op: PointToIntervalOp = {
+    impl: (impl_n: number): F32Interval => {
+      return correctlyRoundedInterval(Math.abs(impl_n));
+    },
+  };
+
+  return runPointOp(toInterval(n), op);
 }

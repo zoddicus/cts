@@ -1,5 +1,11 @@
 import { GPUTest } from '../../../gpu_test.js';
-import { compare, Comparator, FloatMatch, anyOf } from '../../../util/compare.js';
+import {
+  compare,
+  Comparator,
+  FloatMatch,
+  anyOf,
+  intervalComparator,
+} from '../../../util/compare.js';
 import {
   ScalarType,
   Scalar,
@@ -12,6 +18,7 @@ import {
   f32,
   f64,
 } from '../../../util/conversion.js';
+import { PointToInterval } from '../../../util/f32_interval.js';
 import { flushSubnormalNumber, isSubnormalNumber, quantizeToF32 } from '../../../util/math.js';
 
 // Helper for converting Values to Comparators.
@@ -439,4 +446,16 @@ export function makeBinaryF32Case(
   }
 
   return { input: [f32(param0), f32(param1)], expected: anyOf(...expected) };
+}
+
+/**
+ * Generates a Case for the param and unary interval generator provided.
+ * The Case will use use an IntervalComparator for matching results.
+ * @param param the param to pass into the unary operation
+ * @param op callback that implements generating an acceptance interval for a unary operation
+ */
+export function makeUnaryF32IntervalCase(param: number, op: PointToInterval) {
+  param = quantizeToF32(param);
+  const interval = op(param);
+  return { input: [f32(param)], expected: intervalComparator(interval) };
 }
