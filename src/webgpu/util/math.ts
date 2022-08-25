@@ -1,7 +1,15 @@
 import { assert } from '../../common/util/util.js';
 
 import { kBit, kValue } from './constants.js';
-import { f32, f32Bits, i32, Scalar } from './conversion.js';
+import {
+  f32,
+  f32Bits,
+  floatBitsToNumber,
+  i32,
+  kFloat16Format,
+  kFloat32Format,
+  Scalar,
+} from './conversion.js';
 
 /**
  * A multiple of 8 guaranteed to be way too large to allocate (just under 8 pebibytes).
@@ -34,20 +42,20 @@ export function clamp(n: number, { min, max }: { min: number; max: number }): nu
 }
 
 /** @returns 0 if |val| is a subnormal f32 number, otherwise returns |val| */
-export function flushSubnormalNumber(val: number): number {
+export function flushSubnormalNumberF32(val: number): number {
   return isSubnormalNumber(val) ? 0 : val;
 }
 
 /** @returns 0 if |val| is a subnormal f32 number, otherwise returns |val| */
-export function flushSubnormalScalar(val: Scalar): Scalar {
-  return isSubnormalScalar(val) ? f32(0) : val;
+export function flushSubnormalScalarF32(val: Scalar): Scalar {
+  return isSubnormalScalarF32(val) ? f32(0) : val;
 }
 
 /**
  * @returns true if |val| is a subnormal f32 number, otherwise returns false
  * 0 is considered a non-subnormal number by this function.
  */
-export function isSubnormalScalar(val: Scalar): boolean {
+export function isSubnormalScalarF32(val: Scalar): boolean {
   if (val.type.kind !== 'f32') {
     return false;
   }
@@ -71,16 +79,16 @@ export function isF32Finite(n: number) {
 }
 
 /**
- * @returns the next single precision floating point value after |val|,
+ * @returns the next f32 value after |val|,
  * towards +inf if |dir| is true, otherwise towards -inf.
  * If |flush| is true, all subnormal values will be flushed to 0,
  * before processing.
  * If |flush| is false, the next subnormal will be calculated when appropriate,
- * and for -/+0 the nextAfter will be the closest subnormal in the correct
+ * and for -/+0 the nextAfterF32 will be the closest subnormal in the correct
  * direction.
  * val needs to be in [min f32, max f32]
  */
-export function nextAfter(val: number, dir: boolean = true, flush: boolean): Scalar {
+export function nextAfterF32(val: number, dir: boolean = true, flush: boolean): Scalar {
   if (Number.isNaN(val)) {
     return f32Bits(kBit.f32.nan.positive.s);
   }
@@ -98,7 +106,7 @@ export function nextAfter(val: number, dir: boolean = true, flush: boolean): Sca
     `${val} is not in the range of float32`
   );
 
-  val = flush ? flushSubnormalNumber(val) : val;
+  val = flush ? flushSubnormalNumberF32(val) : val;
 
   // -/+0 === 0 returns true
   if (val === 0) {
@@ -126,9 +134,9 @@ export function nextAfter(val: number, dir: boolean = true, flush: boolean): Sca
       // Rounding was in the direction requested
       u32_result = new Uint32Array(new Float32Array([converted]).buffer)[0];
     } else {
-      // Round was opposite of the direction requested, so need nextAfter in the requested direction.
+      // Round was opposite of the direction requested, so need nextAfterF32 in the requested direction.
       // This will not recurse since converted is guaranteed to be a float32 due to the conversion above.
-      const next = nextAfter(converted, dir, flush).value.valueOf() as number;
+      const next = nextAfterF32(converted, dir, flush).value.valueOf() as number;
       u32_result = new Uint32Array(new Float32Array([next]).buffer)[0];
     }
   }
@@ -143,7 +151,7 @@ export function nextAfter(val: number, dir: boolean = true, flush: boolean): Sca
   }
 
   const f32_result = f32Bits(u32_result);
-  return flush ? flushSubnormalScalar(f32_result) : f32_result;
+  return flush ? flushSubnormalScalarF32(f32_result) : f32_result;
 }
 
 /**
@@ -161,7 +169,7 @@ function oneULPImpl(target: number, flush: boolean): number {
     return Number.NaN;
   }
 
-  target = flush ? flushSubnormalNumber(target) : target;
+  target = flush ? flushSubnormalNumberF32(target) : target;
 
   // For values at the edge of the range or beyond ulp(x) is defined as the distance between the two nearest
   // f32 representable numbers to the appropriate edge.
@@ -175,8 +183,8 @@ function oneULPImpl(target: number, flush: boolean): number {
   //     before <= x <= after
   //     before =/= after
   //     before and after are f32 representable
-  const before = nextAfter(target, false, flush).value.valueOf() as number;
-  const after = nextAfter(target, true, flush).value.valueOf() as number;
+  const before = nextAfterF32(target, false, flush).value.valueOf() as number;
+  const after = nextAfterF32(target, true, flush).value.valueOf() as number;
   const converted: number = new Float32Array([target])[0];
   if (converted === target) {
     // |target| is f32 representable, so either before or after will be x
@@ -272,11 +280,60 @@ export function correctlyRoundedF32(n: number): number[] {
 
   if (converted > n) {
     // x_32 rounded towards +inf, so is after x
-    const other = nextAfter(n_32, false, false).value as number;
+    const other = nextAfterF32(n_32, false, false).value as number;
     return [other, converted];
   } else {
     // x_32 rounded towards -inf, so is before x
-    const other = nextAfter(n_32, true, false).value as number;
+    const other = nextAfterF32(n_32, true, false).value as number;
+    return [converted, other];
+  }
+}
+
+/**
+ * Calculate the valid roundings when quantizing to 16-bit floats
+ *
+ * TS/JS's number type is internally a f64, so quantization needs to occur when
+ * converting to f16 for WGSL. WGSL does not specify a specific rounding mode,
+ * so if there if a number is not precisely representable in 16-bits, but in the
+ * range, there are two possible valid quantizations. If it is precisely
+ * representable, there is only one valid quantization. This function calculates
+ * the valid roundings and returns them in an array.
+ *
+ * This function does not consider flushing mode, so subnormals are maintained.
+ * The caller is responsible to flushing before and after as appropriate.
+ *
+ * Out of range values return the appropriate infinity and edge value.
+ *
+ * @param n number to be quantized
+ * @returns all of the acceptable roundings for quantizing to 16-bits in
+ *          ascending order.
+ */
+export function correctlyRoundedF16(n: number): number[] {
+  assert(!Number.isNaN(n), `correctlyRoundedF16 not defined for NaN`);
+  // Above f16 range
+  if (n === Number.POSITIVE_INFINITY || n > kValue.f16.positive.max) {
+    return [kValue.f16.positive.max, Number.POSITIVE_INFINITY];
+  }
+
+  // Below f16 range
+  if (n === Number.NEGATIVE_INFINITY || n < kValue.f16.negative.min) {
+    return [Number.NEGATIVE_INFINITY, kValue.f16.negative.min];
+  }
+
+  const n_32 = new Float32Array([n])[0];
+  const converted: number = n_32;
+  if (n === converted) {
+    // n is precisely expressible as a f16, so should not be rounded
+    return [n];
+  }
+
+  if (converted > n) {
+    // x_32 rounded towards +inf, so is after x
+    const other = nextAfterF32(n_32, false, false).value as number;
+    return [other, converted];
+  } else {
+    // x_32 rounded towards -inf, so is before x
+    const other = nextAfterF32(n_32, true, false).value as number;
     return [converted, other];
   }
 }
@@ -520,9 +577,14 @@ export function lcm(a: number, b: number): number {
   return (a * b) / gcd(a, b);
 }
 
-/** Converts a 32-bit hex values to a 32-bit float value */
+/** Converts a 32-bit hex value to a 32-bit float value */
 export function hexToF32(hex: number): number {
-  return new Float32Array(new Uint32Array([hex]).buffer)[0];
+  return floatBitsToNumber(hex, kFloat32Format);
+}
+
+/** Converts a 16-bit hex value to a 16-bit float value */
+export function hexToF16(hex: number): number {
+  return floatBitsToNumber(hex, kFloat16Format);
 }
 
 /** Converts two 32-bit hex values to a 64-bit float value */

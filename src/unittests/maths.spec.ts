@@ -5,7 +5,13 @@ Util math unit tests.
 import { makeTestGroup } from '../common/framework/test_group.js';
 import { objectEquals } from '../common/util/util.js';
 import { kBit, kValue } from '../webgpu/util/constants.js';
-import { f32, f32Bits, float32ToUint32, Scalar } from '../webgpu/util/conversion.js';
+import {
+  f16Bits,
+  f32,
+  f32Bits,
+  float32ToUint32,
+  Scalar,
+} from '../webgpu/util/conversion.js';
 import {
   biasedRange,
   cartesianProduct,
@@ -16,7 +22,7 @@ import {
   hexToF64,
   lerp,
   linearRange,
-  nextAfter,
+  nextAfterF32,
   oneULP,
   withinULP,
 } from '../webgpu/util/math.js';
@@ -104,7 +110,7 @@ g.test('nextAfterFlushToZero')
     const dir = t.params.dir;
     const expect = t.params.result;
     const expect_type = typeof expect;
-    const got = nextAfter(val, dir, true);
+    const got = nextAfterF32(val, dir, true);
     const got_type = typeof got;
     t.expect(
       got.value === expect.value || (Number.isNaN(got.value) && Number.isNaN(expect.value)),
@@ -170,7 +176,7 @@ g.test('nextAfterNoFlush')
     const dir = t.params.dir;
     const expect = t.params.result;
     const expect_type = typeof expect;
-    const got = nextAfter(val, dir, false);
+    const got = nextAfterF32(val, dir, false);
     const got_type = typeof got;
     t.expect(
       got.value === expect.value || (Number.isNaN(got.value) && Number.isNaN(expect.value)),
@@ -834,6 +840,32 @@ g.test('f32LimitsEquivalency')
     test.expect(
       val_to_bits && bits_to_val,
       `bits = ${bits}, value = ${value}, returned val_to_bits as ${val_to_bits}, and bits_to_val as ${bits_to_val}, they are expected to be equivalent`
+    );
+  });
+
+// Test to confirm kBit and kValue constants are equivalent for f16
+g.test('f16LimitsEquivalency')
+  .paramsSimple<limitsCase>([
+    { bits: kBit.f16.positive.max, value: kValue.f16.positive.max },
+    { bits: kBit.f16.positive.min, value: kValue.f16.positive.min },
+    { bits: kBit.f16.negative.max, value: kValue.f16.negative.max },
+    { bits: kBit.f16.negative.min, value: kValue.f16.negative.min },
+    { bits: kBit.f16.subnormal.positive.max, value: kValue.f16.subnormal.positive.max },
+    { bits: kBit.f16.subnormal.positive.min, value: kValue.f16.subnormal.positive.min },
+    { bits: kBit.f16.subnormal.negative.max, value: kValue.f16.subnormal.negative.max },
+    { bits: kBit.f16.subnormal.negative.min, value: kValue.f16.subnormal.negative.min },
+    { bits: kBit.f16.infinity.positive, value: kValue.f16.infinity.positive },
+    { bits: kBit.f16.infinity.negative, value: kValue.f16.infinity.negative },
+  ])
+  .fn(test => {
+    const bits = test.params.bits;
+    const value = test.params.value;
+
+    // val -> bits is not tested due tofloat32ToFloat16Bits not handling subnormal numbers, it has FTZ behaviour.
+    const bits_to_val = value === (f16Bits(bits).value as number);
+    test.expect(
+      bits_to_val,
+      `bits = ${bits}, value = ${value}, returned bits_to_val as ${bits_to_val}, they are expected to be equivalent`
     );
   });
 

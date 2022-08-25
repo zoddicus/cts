@@ -4,7 +4,7 @@ import { kValue } from './constants.js';
 import {
   cartesianProduct,
   correctlyRoundedF32,
-  flushSubnormalNumber,
+  flushSubnormalNumberF32,
   isF32Finite,
   isSubnormalNumber,
   oneULP,
@@ -593,8 +593,8 @@ function ULPIntervalOp(numULP: number): PointToIntervalOp {
       const end = n + numULP * ulp;
 
       return new F32Interval(
-        Math.min(begin, flushSubnormalNumber(begin)),
-        Math.max(end, flushSubnormalNumber(end))
+        Math.min(begin, flushSubnormalNumberF32(begin)),
+        Math.max(end, flushSubnormalNumberF32(end))
       );
     };
   }
