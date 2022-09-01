@@ -1,4 +1,4 @@
-import Float16Array from '../../../external/petamoriken/float16/float16.js';
+import { Float16Array } from '../../external/petamoriken/float16/float16.js';
 
 // MAINTENANCE_TODO(sarahM0): Perhaps instead of kBit and kValue tables we could have one table
 // where every value is a Scalar instead of either bits or value?

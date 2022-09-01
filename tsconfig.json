@@ -6,7 +6,7 @@
     /* Output options */
     "noEmit": true,
     /* Strict type-checking options */
-    "allowJs": false,
+    "allowJs": true,
     "strict": true,
     /* tsc lint options */
     "noImplicitReturns": true,
