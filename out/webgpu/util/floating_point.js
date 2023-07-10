@@ -8,12 +8,14 @@ import {
 f16,
 f32,
 f64,
+isFloatType,
 reinterpretF16AsU16,
 reinterpretF32AsU32,
 reinterpretF64AsU32s,
 reinterpretU16AsF16,
 reinterpretU32AsF32,
 reinterpretU32sAsF64,
+
 
 toMatrix,
 toVector,
@@ -613,7 +615,8 @@ function addFlushedIfNeededF16(values) {
 
 
 
-class FPTraits {
+/** Abstract base class for all floating-point traits */
+export class FPTraits {
 
   constructor(k) {
     this.kind = k;
@@ -4962,4 +4965,30 @@ export const FP = {
   f16: new F16Traits(),
   abstract: new FPAbstractTraits()
 };
+
+/** @returns the floating-point traits for @p type */
+export function fpTraitsFor(type) {
+  switch (type.kind) {
+    case 'abstract-float':
+      return FP.abstract;
+    case 'f32':
+      return FP.f32;
+    case 'f16':
+      return FP.f16;
+    default:
+      unreachable(`unsupported type: ${type}`);}
+
+}
+
+/** @returns true if the value @p value is representable with @p type */
+export function isRepresentable(value, type) {
+  if (!Number.isFinite(value)) {
+    return false;
+  }
+  if (isFloatType(type)) {
+    const constants = fpTraitsFor(type).constants();
+    return value >= constants.negative.min && value <= constants.positive.max;
+  }
+  assert(false, `isRepresentable() is not yet implemented for type ${type}`);
+}
 //# sourceMappingURL=floating_point.js.map

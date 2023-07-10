@@ -8,6 +8,7 @@ import {
   f16,
   f32,
   f64,
+  isFloatType,
   reinterpretF16AsU16,
   reinterpretF32AsU32,
   reinterpretF64AsU32s,
@@ -15,6 +16,7 @@ import {
   reinterpretU32AsF32,
   reinterpretU32sAsF64,
   Scalar,
+  ScalarType,
   toMatrix,
   toVector,
   u32,
@@ -613,7 +615,8 @@ interface FPConstants {
   };
 }
 
-abstract class FPTraits {
+/** Abstract base class for all floating-point traits */
+export abstract class FPTraits {
   public readonly kind: FPKind;
   protected constructor(k: FPKind) {
     this.kind = k;
@@ -1085,7 +1088,7 @@ abstract class FPTraits {
    * @param filter what interval filtering to apply
    * @param ops callbacks that implement generating an acceptance interval
    */
-  private makeScalarTripleToIntervalCase(
+  public makeScalarTripleToIntervalCase(
     param0: number,
     param1: number,
     param2: number,
@@ -4962,3 +4965,29 @@ export const FP = {
   f16: new F16Traits(),
   abstract: new FPAbstractTraits(),
 };
+
+/** @returns the floating-point traits for @p type */
+export function fpTraitsFor(type: ScalarType): FPTraits {
+  switch (type.kind) {
+    case 'abstract-float':
+      return FP.abstract;
+    case 'f32':
+      return FP.f32;
+    case 'f16':
+      return FP.f16;
+    default:
+      unreachable(`unsupported type: ${type}`);
+  }
+}
+
+/** @returns true if the value @p value is representable with @p type */
+export function isRepresentable(value: number, type: ScalarType) {
+  if (!Number.isFinite(value)) {
+    return false;
+  }
+  if (isFloatType(type)) {
+    const constants = fpTraitsFor(type).constants();
+    return value >= constants.negative.min && value <= constants.positive.max;
+  }
+  assert(false, `isRepresentable() is not yet implemented for type ${type}`);
+}
