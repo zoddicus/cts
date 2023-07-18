@@ -3210,6 +3210,14 @@ export const listing = [
       "shader",
       "validation",
       "decl",
+      "ptr_spelling"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "decl",
       "var_access_mode"
     ]
   },
@@ -3289,6 +3297,16 @@ export const listing = [
       "call",
       "builtin",
       "atan"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "atan2"
     ]
   },
   {
