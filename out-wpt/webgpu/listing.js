@@ -3632,6 +3632,14 @@ export const listing = [
       "shader",
       "validation",
       "parse",
+      "diagnostic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
       "discard"
     ]
   },
@@ -3657,6 +3665,14 @@ export const listing = [
       "validation",
       "parse",
       "literal"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "must_use"
     ]
   },
   {
@@ -3697,14 +3713,6 @@ export const listing = [
       "validation",
       "parse",
       "var_and_let"
-    ]
-  },
-  {
-    "file": [
-      "shader",
-      "validation",
-      "resource_interface",
-      "bindings"
     ]
   },
   {
