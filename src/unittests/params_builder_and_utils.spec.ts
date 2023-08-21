@@ -238,6 +238,26 @@ g.test('expandP').fn(t => {
       yield* kUnitCaseParamsBuilder.combine('z', [3, 4]);
       yield { w: 5 };
     }),
+    [
+      [{ z: 3 }, undefined],
+      [{ z: 4 }, undefined],
+      [{ w: 5 }, undefined],
+    ],
+    {}
+  );
+  t.expectParams<{ z: number | undefined; w: number | undefined }, {}>(
+    u.expandWithParams(function* () {
+      yield* kUnitCaseParamsBuilder.combine('z', [3, 4]);
+      yield { w: 5 };
+    }),
+    [[{ z: 4 }, undefined]],
+    { z: 4 }
+  );
+  t.expectParams<{ z: number | undefined; w: number | undefined }, {}>(
+    u.expandWithParams(function* () {
+      yield* kUnitCaseParamsBuilder.combine('z', [3, 4]);
+      yield { w: 5 };
+    }),
     [[{ z: 3 }, undefined]],
     { z: 3 }
   );
@@ -247,6 +267,24 @@ g.test('expandP').fn(t => {
       yield { w: 5 };
     }),
     [[{}, [{ z: 3 }, { z: 4 }, { w: 5 }]]]
+  );
+
+  t.expectParams<{ x: [] | {} }, {}>(
+    u.expand('x', () => [[], {}] as const),
+    [
+      [{ x: [] }, undefined],
+      [{ x: {} }, undefined],
+    ]
+  );
+  t.expectParams<{ x: [] | {} }, {}>(
+    u.expand('x', () => [[], {}] as const),
+    [[{ x: [] }, undefined]],
+    { x: [] }
+  );
+  t.expectParams<{ x: [] | {} }, {}>(
+    u.expand('x', () => [[], {}] as const),
+    [[{ x: {} }, undefined]],
+    { x: {} }
   );
 
   // more complex
@@ -336,6 +374,25 @@ g.test('expand').fn(t => {
       [{ z: 3 }, undefined],
       [{ z: 4 }, undefined],
     ]
+  );
+  t.expectParams<{ z: number }, {}>(
+    u.expand('z', function* () {
+      yield 3;
+      yield 4;
+    }),
+    [
+      [{ z: 3 }, undefined],
+      [{ z: 4 }, undefined],
+    ],
+    {}
+  );
+  t.expectParams<{ z: number }, {}>(
+    u.expand('z', function* () {
+      yield 3;
+      yield 4;
+    }),
+    [[{ z: 3 }, undefined]],
+    { z: 3 }
   );
   t.expectParams<{}, { z: number }>(
     u.beginSubcases().expand('z', function* () {
