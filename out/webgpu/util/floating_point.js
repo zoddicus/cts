@@ -4834,7 +4834,7 @@ class FPAbstractTraits extends FPTraits {
   acoshAlternativeInterval = this.unimplementedScalarToInterval.bind(this);
   acoshPrimaryInterval = this.unimplementedScalarToInterval.bind(this);
   acoshIntervals = [this.acoshAlternativeInterval, this.acoshPrimaryInterval];
-  additionInterval = this.unimplementedScalarPairToInterval.bind(this);
+  additionInterval = this.additionIntervalImpl.bind(this);
   additionMatrixMatrixInterval = this.unimplementedMatrixPairToMatrix.bind(this);
   asinInterval = this.unimplementedScalarToInterval.bind(this);
   asinhInterval = this.unimplementedScalarToInterval.bind(this);
@@ -5127,8 +5127,8 @@ class F16Traits extends FPTraits {
   atan2Interval = this.atan2IntervalImpl.bind(this);
   atanhInterval = this.unimplementedScalarToInterval.bind(this);
   ceilInterval = this.ceilIntervalImpl.bind(this);
-  clampMedianInterval = this.unimplementedScalarTripleToInterval.bind(this);
-  clampMinMaxInterval = this.unimplementedScalarTripleToInterval.bind(this);
+  clampMedianInterval = this.clampMedianIntervalImpl.bind(this);
+  clampMinMaxInterval = this.clampMinMaxIntervalImpl.bind(this);
   clampIntervals = [this.clampMedianInterval, this.clampMinMaxInterval];
   cosInterval = this.cosIntervalImpl.bind(this);
   coshInterval = this.unimplementedScalarToInterval.bind(this);
@@ -5181,12 +5181,12 @@ class F16Traits extends FPTraits {
   remainderInterval = this.unimplementedScalarPairToInterval.bind(this);
   roundInterval = this.roundIntervalImpl.bind(this);
   saturateInterval = this.unimplementedScalarToInterval.bind(this);
-  signInterval = this.unimplementedScalarToInterval.bind(this);
+  signInterval = this.signIntervalImpl.bind(this);
   sinInterval = this.sinIntervalImpl.bind(this);
   sinhInterval = this.unimplementedScalarToInterval.bind(this);
   smoothStepInterval = this.unimplementedScalarTripleToInterval.bind(this);
   sqrtInterval = this.sqrtIntervalImpl.bind(this);
-  stepInterval = this.unimplementedScalarPairToInterval.bind(this);
+  stepInterval = this.stepIntervalImpl.bind(this);
   subtractionInterval = this.subtractionIntervalImpl.bind(this);
   subtractionMatrixMatrixInterval = this.unimplementedMatrixPairToMatrix.bind(this);
   tanInterval = this.unimplementedScalarToInterval.bind(this);
