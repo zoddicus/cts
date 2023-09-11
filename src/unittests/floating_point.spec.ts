@@ -2557,33 +2557,33 @@ g.test('ceilInterval')
         const constants = FP[p.trait].constants();
         // prettier-ignore
         return [
-        { input: 0, expected: 0 },
-        { input: 0.1, expected: 1 },
-        { input: 0.9, expected: 1 },
-        { input: 1.0, expected: 1 },
-        { input: 1.1, expected: 2 },
-        { input: 1.9, expected: 2 },
-        { input: -0.1, expected: 0 },
-        { input: -0.9, expected: 0 },
-        { input: -1.0, expected: -1 },
-        { input: -1.1, expected: -1 },
-        { input: -1.9, expected: -1 },
+          { input: 0, expected: 0 },
+          { input: 0.1, expected: 1 },
+          { input: 0.9, expected: 1 },
+          { input: 1.0, expected: 1 },
+          { input: 1.1, expected: 2 },
+          { input: 1.9, expected: 2 },
+          { input: -0.1, expected: 0 },
+          { input: -0.9, expected: 0 },
+          { input: -1.0, expected: -1 },
+          { input: -1.1, expected: -1 },
+          { input: -1.9, expected: -1 },
 
-        // Edge cases
-        { input: constants.positive.infinity, expected: kUnboundedBounds },
-        { input: constants.negative.infinity, expected: kUnboundedBounds },
-        { input: constants.positive.max, expected: constants.positive.max },
-        { input: constants.positive.min, expected: 1 },
-        { input: constants.negative.min, expected: constants.negative.min },
-        { input: constants.negative.max, expected: 0 },
-        ...kCeilIntervalCases[p.trait],
+          // Edge cases
+          { input: constants.positive.infinity, expected: kUnboundedBounds },
+          { input: constants.negative.infinity, expected: kUnboundedBounds },
+          { input: constants.positive.max, expected: constants.positive.max },
+          { input: constants.positive.min, expected: 1 },
+          { input: constants.negative.min, expected: constants.negative.min },
+          { input: constants.negative.max, expected: 0 },
+          ...kCeilIntervalCases[p.trait],
 
-        // 32-bit subnormals
-        { input: constants.positive.subnormal.max, expected: [0, 1] },
-        { input: constants.positive.subnormal.min, expected: [0, 1] },
-        { input: constants.negative.subnormal.min, expected: 0 },
-        { input: constants.negative.subnormal.max, expected: 0 },
-      ];
+          // 32-bit subnormals
+          { input: constants.positive.subnormal.max, expected: [0, 1] },
+          { input: constants.positive.subnormal.min, expected: [0, 1] },
+          { input: constants.negative.subnormal.min, expected: 0 },
+          { input: constants.negative.subnormal.max, expected: 0 },
+        ];
       })
   )
   .fn(t => {
@@ -3110,6 +3110,27 @@ const kNegationIntervalCases = {
     { input: kValue.f32.subnormal.negative.min, expected: [0, kValue.f32.subnormal.positive.max] },
     { input: kValue.f32.subnormal.negative.max, expected: [0, kValue.f32.subnormal.positive.min] },
   ] as ScalarToIntervalCase[],
+  f16: [
+    // Edge cases
+    { input: kValue.f16.infinity.positive, expected: kUnboundedBounds },
+    { input: kValue.f16.infinity.negative, expected: kUnboundedBounds },
+    { input: kValue.f16.positive.max, expected: kValue.f16.negative.min },
+    { input: kValue.f16.positive.min, expected: kValue.f16.negative.max },
+    { input: kValue.f16.negative.min, expected: kValue.f16.positive.max },
+    { input: kValue.f16.negative.max, expected: kValue.f16.positive.min },
+
+    // Normals
+    { input: 0.1, expected: [kMinusOneULPFunctions['f16'](reinterpretU16AsF16(0xae66)), reinterpretU16AsF16(0xae66)] }, // ~-0.1
+    { input: 1.9, expected: [reinterpretU16AsF16(0xbf9a), kPlusOneULPFunctions['f16'](reinterpretU16AsF16(0xbf9a))] },  // ~-1.9
+    { input: -0.1, expected: [reinterpretU16AsF16(0x2e66), kPlusOneULPFunctions['f16'](reinterpretU16AsF16(0x2e66))] }, // ~0.1
+    { input: -1.9, expected: [kMinusOneULPFunctions['f16'](reinterpretU16AsF16(0x3f9a)), reinterpretU16AsF16(0x3f9a)] },  // ~1.9
+
+    // Subnormals
+    { input: kValue.f16.subnormal.positive.max, expected: [kValue.f16.subnormal.negative.min, 0] },
+    { input: kValue.f16.subnormal.positive.min, expected: [kValue.f16.subnormal.negative.max, 0] },
+    { input: kValue.f16.subnormal.negative.min, expected: [0, kValue.f16.subnormal.positive.max] },
+    { input: kValue.f16.subnormal.negative.max, expected: [0, kValue.f16.subnormal.positive.min] },
+  ] as ScalarToIntervalCase[],
   abstract: [
     // Edge cases
     { input: kValue.f64.infinity.positive, expected: kUnboundedBounds },
@@ -3136,7 +3157,7 @@ const kNegationIntervalCases = {
 g.test('negationInterval')
   .params(u =>
     u
-      .combine('trait', ['f32', 'abstract'] as const)
+      .combine('trait', ['f32', 'f16', 'abstract'] as const)
       .beginSubcases()
       .expandWithParams<ScalarToIntervalCase>(p => {
         // prettier-ignore
