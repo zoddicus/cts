@@ -4869,14 +4869,8 @@ class FPAbstractTraits extends FPTraits {
 
   atanhInterval = this.unimplementedScalarToInterval.bind(this, 'atanhInterval');
   ceilInterval = this.unimplementedScalarToInterval.bind(this, 'ceilInterval');
-  clampMedianInterval = this.unimplementedScalarTripleToInterval.bind(
-  this,
-  'clampMedianInterval');
-
-  clampMinMaxInterval = this.unimplementedScalarTripleToInterval.bind(
-  this,
-  'clampMinMaxInterval');
-
+  clampMedianInterval = this.clampMedianIntervalImpl.bind(this);
+  clampMinMaxInterval = this.clampMinMaxIntervalImpl.bind(this);
   clampIntervals = [this.clampMedianInterval, this.clampMinMaxInterval];
   cosInterval = this.unimplementedScalarToInterval.bind(this, 'cosInterval');
   coshInterval = this.unimplementedScalarToInterval.bind(this, 'coshInterval');
@@ -4963,10 +4957,7 @@ class FPAbstractTraits extends FPTraits {
   'remainderInterval');
 
   roundInterval = this.unimplementedScalarToInterval.bind(this, 'roundInterval');
-  saturateInterval = this.unimplementedScalarToInterval.bind(
-  this,
-  'saturateInterval');
-
+  saturateInterval = this.saturateIntervalImpl.bind(this);
   signInterval = this.unimplementedScalarToInterval.bind(this, 'signInterval');
   sinInterval = this.unimplementedScalarToInterval.bind(this, 'sinInterval');
   sinhInterval = this.unimplementedScalarToInterval.bind(this, 'sinhInterval');
@@ -5214,7 +5205,7 @@ class F16Traits extends FPTraits {
   clampIntervals = [this.clampMedianInterval, this.clampMinMaxInterval];
   cosInterval = this.cosIntervalImpl.bind(this);
   coshInterval = this.unimplementedScalarToInterval.bind(this, 'coshInterval');
-  crossInterval = this.unimplementedVectorPairToVector.bind(this, 'crossInterval');
+  crossInterval = this.crossIntervalImpl.bind(this);
   degreesInterval = this.degreesIntervalImpl.bind(this);
   determinantInterval = this.unimplementedMatrixToInterval.bind(
   this,
