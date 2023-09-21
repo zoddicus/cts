@@ -4874,7 +4874,7 @@ class FPAbstractTraits extends FPTraits {
   clampIntervals = [this.clampMedianInterval, this.clampMinMaxInterval];
   cosInterval = this.unimplementedScalarToInterval.bind(this, 'cosInterval');
   coshInterval = this.unimplementedScalarToInterval.bind(this, 'coshInterval');
-  crossInterval = this.unimplementedVectorPairToVector.bind(this, 'crossInterval');
+  crossInterval = this.crossIntervalImpl.bind(this);
   degreesInterval = this.degreesIntervalImpl.bind(this);
   determinantInterval = this.unimplementedMatrixToInterval.bind(
   this,
@@ -5211,7 +5211,7 @@ class F16Traits extends FPTraits {
   this,
   'determinantInterval');
 
-  distanceInterval = this.unimplementedDistance.bind(this);
+  distanceInterval = this.distanceIntervalImpl.bind(this);
   divisionInterval = this.divisionIntervalImpl.bind(this);
   dotInterval = this.dotIntervalImpl.bind(this);
   expInterval = this.expIntervalImpl.bind(this);
@@ -5225,7 +5225,7 @@ class F16Traits extends FPTraits {
   this,
   'ldexpInterval');
 
-  lengthInterval = this.unimplementedLength.bind(this);
+  lengthInterval = this.lengthIntervalImpl.bind(this);
   logInterval = this.logIntervalImpl.bind(this);
   log2Interval = this.log2IntervalImpl.bind(this);
   maxInterval = this.maxIntervalImpl.bind(this);
