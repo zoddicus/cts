@@ -491,6 +491,7 @@ class RunCaseSpecific {
       try {
         await inst.init();
         await this.fn(inst);
+        rec.passed();
       } finally {
         // Runs as long as constructor succeeded, even if initialization or the test failed.
         await inst.finalize();
@@ -500,10 +501,9 @@ class RunCaseSpecific {
       // An error from init or test may have been a SkipTestCase.
       // An error from finalize may have been an eventualAsyncExpectation failure
       // or unexpected validation/OOM error from the GPUDevice.
+      rec.threw(ex);
       if (throwSkip && ex instanceof SkipTestCase) {
         throw ex;
-      } else {
-        rec.threw(ex);
       }
     } finally {
       try {
