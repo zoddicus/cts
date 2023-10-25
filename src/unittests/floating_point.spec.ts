@@ -6,15 +6,12 @@ import { makeTestGroup } from '../common/framework/test_group.js';
 import { objectEquals, unreachable } from '../common/util/util.js';
 import { kValue } from '../webgpu/util/constants.js';
 import { FP, FPInterval, FPIntervalParam, IntervalBounds } from '../webgpu/util/floating_point.js';
+import { map2DArray, oneULPF32, oneULPF16, oneULPF64 } from '../webgpu/util/math.js';
 import {
   reinterpretU16AsF16,
   reinterpretU32AsF32,
   reinterpretU64AsF64,
-  map2DArray,
-  oneULPF32,
-  oneULPF16,
-  oneULPF64,
-} from '../webgpu/util/math.js';
+} from '../webgpu/util/reinterpret.js';
 
 import { UnitTest } from './unit_test.js';
 
@@ -3431,7 +3428,7 @@ g.test('negationInterval')
     );
   });
 
-g.test('quantizeToF16Interval_f32')
+g.test('quantizeToF16Interval')
   .paramsSubcasesOnly<ScalarToIntervalCase>(
     // prettier-ignore
     [

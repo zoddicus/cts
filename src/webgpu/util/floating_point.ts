@@ -9,12 +9,6 @@ import {
   f16,
   f32,
   isFloatType,
-  reinterpretF16AsU16,
-  reinterpretF32AsU32,
-  reinterpretF64AsU32s,
-  reinterpretU16AsF16,
-  reinterpretU32AsF32,
-  reinterpretU32sAsF64,
   Scalar,
   ScalarType,
   toMatrix,
@@ -45,6 +39,14 @@ import {
   unflatten2DArray,
   every2DArray,
 } from './math.js';
+import {
+  reinterpretF16AsU16,
+  reinterpretF32AsU32,
+  reinterpretF64AsU32s,
+  reinterpretU16AsF16,
+  reinterpretU32AsF32,
+  reinterpretU32sAsF64,
+} from './reinterpret.js';
 
 /** Indicate the kind of WGSL floating point numbers being operated on */
 export type FPKind = 'f32' | 'f16' | 'abstract';
@@ -4608,6 +4610,21 @@ class F32Traits extends FPTraits {
 
   // Framework - API
 
+  private readonly QuantizeToF16IntervalOp: ScalarToIntervalOp = {
+    impl: (n: number): FPInterval => {
+      const rounded = correctlyRoundedF16(n);
+      const flushed = addFlushedIfNeededF16(rounded);
+      return this.spanIntervals(...flushed.map(f => this.toInterval(f)));
+    },
+  };
+
+  protected quantizeToF16IntervalImpl(n: number): FPInterval {
+    return this.runScalarToIntervalOp(this.toInterval(n), this.QuantizeToF16IntervalOp);
+  }
+
+  /** Calculate an acceptance interval of quantizeToF16(x) */
+  public readonly quantizeToF16Interval = this.quantizeToF16IntervalImpl.bind(this);
+
   /**
    * Once-allocated ArrayBuffer/views to avoid overhead of allocation when
    * converting between numeric formats
@@ -4720,21 +4737,6 @@ class F32Traits extends FPTraits {
 
   /** Calculate an acceptance interval vector for unpack4x8unorm(x) */
   public readonly unpack4x8unormInterval = this.unpack4x8unormIntervalImpl.bind(this);
-
-  private readonly QuantizeToF16IntervalOp: ScalarToIntervalOp = {
-    impl: (n: number): FPInterval => {
-      const rounded = correctlyRoundedF16(n);
-      const flushed = addFlushedIfNeededF16(rounded);
-      return this.spanIntervals(...flushed.map(f => this.toInterval(f)));
-    },
-  };
-
-  protected quantizeToF16IntervalImpl(n: number): FPInterval {
-    return this.runScalarToIntervalOp(this.toInterval(n), this.QuantizeToF16IntervalOp);
-  }
-
-  /** Calculate an acceptance interval of quantizeToF16(x) */
-  public readonly quantizeToF16Interval = this.quantizeToF16IntervalImpl.bind(this);
 }
 
 // Need to separately allocate f32 traits, so they can be referenced by
@@ -5055,10 +5057,6 @@ class FPAbstractTraits extends FPTraits {
     'normalizeInterval'
   );
   public readonly powInterval = this.unimplementedScalarPairToInterval.bind(this, 'powInterval');
-  public readonly quantizeToF16Interval = this.unimplementedScalarToInterval.bind(
-    this,
-    'quantizeToF16Interval'
-  );
   public readonly radiansInterval = this.radiansIntervalImpl.bind(this);
   public readonly reflectInterval = this.unimplementedVectorPairToVector.bind(
     this,
@@ -5353,7 +5351,6 @@ class F16Traits extends FPTraits {
   public readonly negationInterval = this.negationIntervalImpl.bind(this);
   public readonly normalizeInterval = this.normalizeIntervalImpl.bind(this);
   public readonly powInterval = this.powIntervalImpl.bind(this);
-  public readonly quantizeToF16Interval = this.quantizeToF16IntervalNotAvailable.bind(this);
   public readonly radiansInterval = this.radiansIntervalImpl.bind(this);
   public readonly reflectInterval = this.reflectIntervalImpl.bind(this);
   public readonly refractInterval = this.refractIntervalImpl.bind(this);
@@ -5374,12 +5371,6 @@ class F16Traits extends FPTraits {
   public readonly tanhInterval = this.tanhIntervalImpl.bind(this);
   public readonly transposeInterval = this.transposeIntervalImpl.bind(this);
   public readonly truncInterval = this.truncIntervalImpl.bind(this);
-
-  /** quantizeToF16 has no f16 overload. */
-  private quantizeToF16IntervalNotAvailable(n: number): FPInterval {
-    unreachable("quantizeToF16 don't have f16 overload.");
-    return kF16UnboundedInterval;
-  }
 }
 
 export const FP = {
