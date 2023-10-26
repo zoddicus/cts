@@ -29,16 +29,52 @@ import {
   unflatten2DArray,
   every2DArray,
 } from './math.js';
-import {
-  reinterpretF16AsU16,
-  reinterpretF32AsU32,
-  reinterpretF64AsU32s,
-  reinterpretU16AsF16,
-  reinterpretU32AsF32,
-  reinterpretU32sAsF64,
-} from './reinterpret.js';
 
-/** Indicate the kind of WGSL floating point numbers being operated on */
+/** Indicate the kind of WGSL floating point numbers being operated on */ var SerializedFPIntervalKind;
+
+/** serializeFPKind() serializes a FPKind to a BinaryStream */ (function (
+  SerializedFPIntervalKind
+) {
+  SerializedFPIntervalKind[(SerializedFPIntervalKind['Abstract'] = 0)] = 'Abstract';
+  SerializedFPIntervalKind[(SerializedFPIntervalKind['F32'] = 1)] = 'F32';
+  SerializedFPIntervalKind[(SerializedFPIntervalKind['F16'] = 2)] = 'F16';
+})(SerializedFPIntervalKind || (SerializedFPIntervalKind = {}));
+export function serializeFPKind(s, value) {
+  switch (value) {
+    case 'abstract':
+      s.writeU8(SerializedFPIntervalKind.Abstract);
+      break;
+    case 'f16':
+      s.writeU8(SerializedFPIntervalKind.F16);
+      break;
+    case 'f32':
+      s.writeU8(SerializedFPIntervalKind.F32);
+      break;
+  }
+}
+
+/** deserializeFPKind() deserializes a FPKind from a BinaryStream */
+export function deserializeFPKind(s) {
+  const kind = s.readU8();
+  switch (kind) {
+    case SerializedFPIntervalKind.Abstract:
+      return 'abstract';
+    case SerializedFPIntervalKind.F16:
+      return 'f16';
+    case SerializedFPIntervalKind.F32:
+      return 'f32';
+    default:
+      unreachable(`invalid deserialized FPKind: ${kind}`);
+  }
+}
+// Containers
+
+/**
+ * Representation of bounds for an interval as an array with either one or two
+ * elements. Single element indicates that the interval is a single point. For
+ * two elements, the first is the lower bound of the interval and the second is
+ * the upper bound.
+ */
 
 /** Represents a closed interval of floating point numbers */
 export class FPInterval {
@@ -112,76 +148,60 @@ export class FPInterval {
   }
 }
 
-/**
- * SerializedFPInterval holds the serialized form of a FPInterval.
- * This form can be safely encoded to JSON.
- */
-
-/** serializeFPInterval() converts a FPInterval to a SerializedFPInterval */
-export function serializeFPInterval(i) {
+/** serializeFPInterval() serializes a FPInterval to a BinaryStream */
+export function serializeFPInterval(s, i) {
+  serializeFPKind(s, i.kind);
   const traits = FP[i.kind];
-  switch (i.kind) {
-    case 'abstract': {
-      if (i === traits.constants().unboundedInterval) {
-        return { kind: 'abstract', unbounded: true };
-      } else {
-        return {
-          kind: 'abstract',
-          unbounded: false,
-          begin: reinterpretF64AsU32s(i.begin),
-          end: reinterpretF64AsU32s(i.end),
-        };
+  s.writeCond(i !== traits.constants().unboundedInterval, {
+    if_true: () => {
+      // Bounded
+      switch (i.kind) {
+        case 'abstract':
+          s.writeF64(i.begin);
+          s.writeF64(i.end);
+          break;
+        case 'f32':
+          s.writeF32(i.begin);
+          s.writeF32(i.end);
+          break;
+        case 'f16':
+          s.writeF16(i.begin);
+          s.writeF16(i.end);
+          break;
+        default:
+          unreachable(`Unable to serialize FPInterval ${i}`);
+          break;
       }
-    }
-    case 'f32': {
-      if (i === traits.constants().unboundedInterval) {
-        return { kind: 'f32', unbounded: true };
-      } else {
-        return {
-          kind: 'f32',
-          unbounded: false,
-          begin: reinterpretF32AsU32(i.begin),
-          end: reinterpretF32AsU32(i.end),
-        };
-      }
-    }
-    case 'f16': {
-      if (i === traits.constants().unboundedInterval) {
-        return { kind: 'f16', unbounded: true };
-      } else {
-        return {
-          kind: 'f16',
-          unbounded: false,
-          begin: reinterpretF16AsU16(i.begin),
-          end: reinterpretF16AsU16(i.end),
-        };
-      }
-    }
-  }
-
-  unreachable(`Unable to serialize FPInterval ${i}`);
+    },
+    if_false: () => {
+      // Unbounded
+    },
+  });
 }
 
-/** serializeFPInterval() converts a SerializedFPInterval to a FPInterval */
-export function deserializeFPInterval(data) {
-  const kind = data.kind;
+/** deserializeFPInterval() deserializes a FPInterval from a BinaryStream */
+export function deserializeFPInterval(s) {
+  const kind = deserializeFPKind(s);
   const traits = FP[kind];
-  if (data.unbounded) {
-    return traits.constants().unboundedInterval;
-  }
-  switch (kind) {
-    case 'abstract': {
-      return traits.toInterval([reinterpretU32sAsF64(data.begin), reinterpretU32sAsF64(data.end)]);
-    }
-    case 'f32': {
-      return traits.toInterval([reinterpretU32AsF32(data.begin), reinterpretU32AsF32(data.end)]);
-    }
-    case 'f16': {
-      return traits.toInterval([reinterpretU16AsF16(data.begin), reinterpretU16AsF16(data.end)]);
-    }
-  }
+  return s.readCond({
+    if_true: () => {
+      // Bounded
+      switch (kind) {
+        case 'abstract':
+          return traits.toInterval([s.readF64(), s.readF64()]);
+        case 'f32':
+          return traits.toInterval([s.readF32(), s.readF32()]);
+        case 'f16':
+          return traits.toInterval([s.readF16(), s.readF16()]);
+      }
 
-  unreachable(`Unable to deserialize data ${data}`);
+      unreachable(`Unable to deserialize FPInterval with kind ${kind}`);
+    },
+    if_false: () => {
+      // Unbounded
+      return traits.constants().unboundedInterval;
+    },
+  });
 }
 
 /**
@@ -293,7 +313,7 @@ export class FPTraits {
     }
 
     const f = v.map(e => this.toInterval(e));
-    // The return of the map above is a FPInterval[], which needs to be narrowed
+    // The return of the map above is a readonly FPInterval[], which needs to be narrowed
     // to FPVector, since FPVector is defined as fixed length tuples.
     if (this.isVector(f)) {
       return f;
@@ -330,10 +350,10 @@ export class FPTraits {
     if (!m.every(c => c.every(e => e instanceof FPInterval && e.kind === this.kind))) {
       return false;
     }
-    // At this point m guaranteed to be a FPInterval[][], but maybe typed as a
+    // At this point m guaranteed to be a ROArrayArray<FPInterval>, but maybe typed as a
     // FPVector[].
     // Coercing the type since FPVector[] is functionally equivalent to
-    // FPInterval[][] for .length and .every, but they are type compatible,
+    // ROArrayArray<FPInterval> for .length and .every, but they are type compatible,
     // since tuples are not equivalent to arrays, so TS considers c in .every to
     // be unresolvable below, even though our usage is safe.
     m = m;
@@ -363,7 +383,7 @@ export class FPTraits {
 
     const result = map2DArray(m, this.toInterval.bind(this));
 
-    // The return of the map above is a FPInterval[][], which needs to be
+    // The return of the map above is a ROArrayArray<FPInterval>, which needs to be
     // narrowed to FPMatrix, since FPMatrix is defined as fixed length tuples.
     if (this.isMatrix(result)) {
       return result;
@@ -1813,7 +1833,7 @@ export class FPTraits {
     const result_cols = result.length;
     const result_rows = result[0].length;
 
-    // FPMatrix has to be coerced to FPInterval[][] to use .every. This should
+    // FPMatrix has to be coerced to ROArrayArray<FPInterval> to use .every. This should
     // always be safe, since FPMatrix are defined as fixed length array of
     // arrays.
     return result.every(c => c.every(r => r.isFinite()))
@@ -4566,7 +4586,7 @@ export const FP = {
   abstract: new FPAbstractTraits(),
 };
 
-/** @returns the floating-point traits for @p type */
+/** @returns the floating-point traits for `type` */
 export function fpTraitsFor(type) {
   switch (type.kind) {
     case 'abstract-float':
@@ -4580,7 +4600,7 @@ export function fpTraitsFor(type) {
   }
 }
 
-/** @returns true if the value @p value is representable with @p type */
+/** @returns true if the value `value` is representable with `type` */
 export function isRepresentable(value, type) {
   if (!Number.isFinite(value)) {
     return false;
