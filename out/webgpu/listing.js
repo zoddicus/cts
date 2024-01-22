@@ -254,6 +254,15 @@ export const listing = [
       "operation",
       "memory_sync",
       "texture",
+      "readonly_depth_stencil"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "memory_sync",
+      "texture",
       "same_subresource"
     ]
   },
@@ -2414,6 +2423,26 @@ export const listing = [
       "call",
       "builtin",
       "dot"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dot4I8Packed"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dot4U8Packed"
     ]
   },
   {
