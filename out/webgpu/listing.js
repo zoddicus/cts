@@ -3491,6 +3491,13 @@ export const listing = [
     "file": [
       "shader",
       "execution",
+      "memory_layout"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
       "memory_model",
       "adjacent"
     ]
@@ -3653,6 +3660,14 @@ export const listing = [
       "shader",
       "validation",
       "decl",
+      "var"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "decl",
       "var_access_mode"
     ]
   },
@@ -3772,6 +3787,16 @@ export const listing = [
       "call",
       "builtin",
       "atomics"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "barriers"
     ]
   },
   {
@@ -4400,6 +4425,13 @@ export const listing = [
       "validation",
       "uniformity",
       "uniformity"
+    ]
+  },
+  {
+    "file": [
+      "util",
+      "texture",
+      "color_space_conversions"
     ]
   },
   {
