@@ -3048,7 +3048,7 @@ export const listing = [
       "expression",
       "call",
       "builtin",
-      "textureDimension"
+      "textureDimensions"
     ]
   },
   {
@@ -3559,6 +3559,14 @@ export const listing = [
       "execution",
       "memory_model",
       "coherence"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "memory_model",
+      "texture_intra_invocation_coherence"
     ]
   },
   {
