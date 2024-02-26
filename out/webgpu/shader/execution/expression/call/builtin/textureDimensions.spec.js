@@ -12,9 +12,11 @@ import {
   kAllTextureFormats,
   kColorTextureFormats,
   kTextureFormatInfo,
+  sampleTypeForFormatAndAspect,
   textureDimensionAndFormatCompatible } from
 '../../../../../format_info.js';
 import { GPUTest } from '../../../../../gpu_test.js';
+import { align } from '../../../../../util/math.js';
 
 export const g = makeTestGroup(GPUTest);
 
@@ -170,22 +172,22 @@ function testValues(params)
 
   switch (params.dimensions) {
     case '1d':{
-        const w = Math.max(bw, kMinLen) * kMultipleA;
+        const w = align(kMinLen, bw) * kMultipleA;
         return { size: [w], expected: [w >>> mip] };
       }
     case '2d':{
-        const w = Math.max(bw, kMinLen) * kMultipleA;
-        const h = Math.max(bh, kMinLen) * kMultipleB;
+        const w = align(kMinLen, bw) * kMultipleA;
+        const h = align(kMinLen, bh) * kMultipleB;
         return { size: [w, h], expected: [w >>> mip, h >>> mip] };
       }
     case '2d-array':{
-        const w = Math.max(bw, kMinLen) * kMultipleC;
-        const h = Math.max(bh, kMinLen) * kMultipleB;
+        const w = align(kMinLen, bw) * kMultipleC;
+        const h = align(kMinLen, bh) * kMultipleB;
         return { size: [w, h, 4], expected: [w >>> mip, h >>> mip] };
       }
     case '3d':{
-        const w = Math.max(bw, kMinLen) * kMultipleA;
-        const h = Math.max(bh, kMinLen) * kMultipleB;
+        const w = align(kMinLen, bw) * kMultipleA;
+        const h = align(kMinLen, bh) * kMultipleB;
         const d = kMinLen * kMultipleC;
         return {
           size: [w, h, d],
@@ -193,14 +195,14 @@ function testValues(params)
         };
       }
     case 'cube':{
-        const l = Math.max(bw, kMinLen) * Math.max(bh, kMinLen) * kMultipleB;
+        const l = align(kMinLen, bw) * align(kMinLen, bh) * kMultipleB;
         return {
           size: [l, l, kNumCubeFaces],
           expected: [l >>> mip, l >>> mip]
         };
       }
     case 'cube-array':{
-        const l = Math.max(bw, kMinLen) * Math.max(bh, kMinLen) * kMultipleC;
+        const l = align(kMinLen, bw) * align(kMinLen, bh) * kMultipleC;
         return {
           size: [l, l, kNumCubeFaces * 3],
           expected: [l >>> mip, l >>> mip]
@@ -308,7 +310,7 @@ Parameters:
 params((u) =>
 u.
 combine('format', kAllTextureFormats).
-unless((u) => kTextureFormatInfo[u.format].sampleType === 'unfilterable-float').
+unless((p) => kTextureFormatInfo[p.format].color?.type === 'unfilterable-float').
 expand('aspect', (u) => aspectsForFormat(u.format)).
 expand('samples', (u) => samplesForFormat(u.format)).
 beginSubcases().
@@ -344,11 +346,8 @@ fn((t) => {
   function wgslSampledTextureType() {
     const base = t.params.samples !== 1 ? 'texture_multisampled' : 'texture';
     const dimensions = t.params.dimensions.replace('-', '_');
-    if (t.params.aspect === 'stencil-only') {
-      return `${base}_${dimensions}<u32>`;
-    }
-    const formatInfo = kTextureFormatInfo[t.params.format];
-    switch (formatInfo.sampleType) {
+    const sampleType = sampleTypeForFormatAndAspect(t.params.format, t.params.aspect);
+    switch (sampleType) {
       case 'depth':
       case 'float':
         return `${base}_${dimensions}<f32>`;
@@ -388,7 +387,7 @@ Parameters:
 params((u) =>
 u.
 combine('format', kAllTextureFormats).
-filter((u) => kTextureFormatInfo[u.format].sampleType === 'depth').
+filter((p) => !!kTextureFormatInfo[p.format].depth).
 expand('aspect', (u) => aspectsForFormat(u.format)).
 unless((u) => u.aspect === 'stencil-only').
 expand('samples', (u) => samplesForFormat(u.format)).
@@ -495,7 +494,7 @@ fn((t) => {
 
   function wgslStorageTextureType() {
     const dimensions = t.params.dimensions.replace('-', '_');
-    return `texture_storage_${dimensions}<${t.params.format}, read>`;
+    return `texture_storage_${dimensions}<${t.params.format}, write>`;
   }
 
   run(t, textureView, wgslStorageTextureType(), undefined, values);

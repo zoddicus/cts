@@ -3287,6 +3287,16 @@ export const listing = [
       "execution",
       "expression",
       "call",
+      "builtin",
+      "workgroupUniformLoad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
       "user",
       "ptr_params"
     ]
@@ -4169,6 +4179,15 @@ export const listing = [
     "file": [
       "shader",
       "validation",
+      "expression",
+      "unary",
+      "address_of_and_indirection"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
       "extension",
       "pointer_composite_access"
     ]
@@ -4443,6 +4462,14 @@ export const listing = [
       "validation",
       "shader_io",
       "invariant"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "layout_constraints"
     ]
   },
   {

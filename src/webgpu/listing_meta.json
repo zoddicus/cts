@@ -1538,6 +1538,10 @@
   "webgpu:shader,execution,expression,call,builtin,unpack4xU8:basic:*": { "subcaseMS": 78.501 },
   "webgpu:shader,execution,expression,call,builtin,workgroupBarrier:barrier:*": { "subcaseMS": 0.701 },
   "webgpu:shader,execution,expression,call,builtin,workgroupBarrier:stage:*": { "subcaseMS": 1.801 },
+  "webgpu:shader,execution,expression,call,builtin,workgroupUniformLoad:types:*": { "subcaseMS": 1.000 },
+  "webgpu:shader,execution,expression,call,user,ptr_params:array_length:*": { "subcaseMS": 0.000 },
+  "webgpu:shader,execution,expression,call,user,ptr_params:atomic_ptr_to_element:*": { "subcaseMS": 0.000 },
+  "webgpu:shader,execution,expression,call,user,ptr_params:mixed_ptr_parameters:*": { "subcaseMS": 0.000 },
   "webgpu:shader,execution,expression,call,user,ptr_params:read_full_object:*": { "subcaseMS": 0.000 },
   "webgpu:shader,execution,expression,call,user,ptr_params:read_ptr_to_member:*": { "subcaseMS": 0.000 },
   "webgpu:shader,execution,expression,call,user,ptr_params:read_ptr_to_element:*": { "subcaseMS": 0.000 },
@@ -2057,6 +2061,7 @@
   "webgpu:shader,validation,shader_io,invariant:not_valid_on_user_defined_io:*": { "subcaseMS": 1.100 },
   "webgpu:shader,validation,shader_io,invariant:parsing:*": { "subcaseMS": 1.438 },
   "webgpu:shader,validation,shader_io,invariant:valid_only_with_vertex_position_builtin:*": { "subcaseMS": 1.461 },
+  "webgpu:shader,validation,shader_io,layout_constraints:layout_constraints:*": { "subcaseMS": 1.000 },
   "webgpu:shader,validation,shader_io,locations:duplicates:*": { "subcaseMS": 1.906 },
   "webgpu:shader,validation,shader_io,locations:location_fp16:*": { "subcaseMS": 0.501 },
   "webgpu:shader,validation,shader_io,locations:nesting:*": { "subcaseMS": 0.967 },
@@ -2168,5 +2173,8 @@
   "webgpu:shader,validation,expression,call,builtin,arrayLength:bool_type:*": { "subcaseMS": 0 },
   "webgpu:shader,validation,expression,call,builtin,arrayLength:type:*": { "subcaseMS": 0 },
   "webgpu:shader,validation,expression,call,builtin,arrayLength:access_mode:*": { "subcaseMS": 0 },
+  "webgpu:shader,validation,expression,unary,address_of_and_indirection:basic:*": { "subcaseMS": 0 },
+  "webgpu:shader,validation,expression,unary,address_of_and_indirection:composite:*": { "subcaseMS": 0 },
+  "webgpu:shader,validation,expression,unary,address_of_and_indirection:invalid:*": { "subcaseMS": 0 },
   "_end": ""
 }
