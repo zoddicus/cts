@@ -1,4 +1,4 @@
-// AUTO-GENERATED - DO NOT EDIT. See src/common/tools/gen_listings.ts.
+// AUTO-GENERATED - DO NOT EDIT. See src/common/tools/gen_listings_and_webworkers.ts.
 
 export const listing = [
   {
@@ -1755,6 +1755,36 @@ export const listing = [
       "execution"
     ],
     "readme": "Tests that check the result of valid shader execution."
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "access",
+      "array",
+      "index"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "access",
+      "vector",
+      "components"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "access",
+      "vector",
+      "index"
+    ]
   },
   {
     "file": [
@@ -3824,6 +3854,15 @@ export const listing = [
       "expression",
       "binary",
       "bitwise_shift"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "comparison"
     ]
   },
   {
