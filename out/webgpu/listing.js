@@ -3853,6 +3853,15 @@ export const listing = [
       "validation",
       "expression",
       "binary",
+      "and_or_xor"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
       "bitwise_shift"
     ]
   },
@@ -4302,6 +4311,15 @@ export const listing = [
       "expression",
       "unary",
       "address_of_and_indirection"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "unary",
+      "logical_negation"
     ]
   },
   {
