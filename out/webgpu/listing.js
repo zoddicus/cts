@@ -3758,6 +3758,14 @@ export const listing = [
       "shader",
       "execution",
       "statement",
+      "discard"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "statement",
       "increment_decrement"
     ]
   },
@@ -3845,6 +3853,15 @@ export const listing = [
       "expression",
       "access",
       "vector"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "add_sub_mul"
     ]
   },
   {
@@ -4151,6 +4168,26 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "max"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "min"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "modf"
     ]
   },
@@ -4291,6 +4328,66 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "textureSampleBaseClampToEdge"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleBias"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleCompare"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleCompareLevel"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleGrad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleLevel"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "unpack4xI8"
     ]
   },
@@ -4321,6 +4418,15 @@ export const listing = [
       "expression",
       "unary",
       "address_of_and_indirection"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "unary",
+      "arithmetic_negation"
     ]
   },
   {
@@ -4547,6 +4653,14 @@ export const listing = [
       "validation",
       "parse",
       "source"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "statement_behavior"
     ]
   },
   {
