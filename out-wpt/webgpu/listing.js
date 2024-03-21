@@ -4818,7 +4818,23 @@ export const listing = [
       "shader",
       "validation",
       "types",
+      "array"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
       "atomics"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "matrix"
     ]
   },
   {
