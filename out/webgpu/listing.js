@@ -1753,6 +1753,11 @@ export const listing = [
   },
   {
     "file": [
+      "print_environment"
+    ]
+  },
+  {
+    "file": [
       "shader"
     ],
     "readme": "Tests for full coverage of the shaders that can be passed to WebGPU."
@@ -3855,6 +3860,14 @@ export const listing = [
       "shader",
       "validation",
       "decl",
+      "context_dependent_resolution"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "decl",
       "let"
     ]
   },
@@ -4102,6 +4115,36 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "countLeadingZeros"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "countOneBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "countTrailingZeros"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "cross"
     ]
   },
@@ -4182,7 +4225,57 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "faceForward"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "firstLeadingBit"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "firstTrailingBit"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "floor"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "fract"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "frexp"
     ]
   },
   {
@@ -4272,6 +4365,16 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "pack4x8snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "pack4xI8"
     ]
   },
@@ -4312,7 +4415,37 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "quantizeToF16"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "radians"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "reflect"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "reverseBits"
     ]
   },
   {
@@ -4373,6 +4506,16 @@ export const listing = [
       "call",
       "builtin",
       "sqrt"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "step"
     ]
   },
   {
@@ -4473,6 +4616,16 @@ export const listing = [
       "call",
       "builtin",
       "textureStore"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "trunc"
     ]
   },
   {

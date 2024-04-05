@@ -2340,6 +2340,13 @@ const kFloatVec3 = [Type.vec(3, Type.abstractFloat), Type.vec3f, Type.vec3h];
 /// All floating-point vec4 types
 const kFloatVec4 = [Type.vec(4, Type.abstractFloat), Type.vec4f, Type.vec4h];
 
+export const kConcreteF32ScalarsAndVectors = [
+Type.f32,
+Type.vec2f,
+Type.vec3f,
+Type.vec4f];
+
+
 /// All f16 floating-point scalar and vector types
 export const kConcreteF16ScalarsAndVectors = [
 Type.f16,
@@ -2422,6 +2429,13 @@ Type.abstractInt,
 export const kAllNumericScalarsAndVectors = [
 ...kConvertableToFloatScalarsAndVectors,
 ...kConcreteIntegerScalarsAndVectors];
+
+
+/// All the concrete integer and floating point scalars and vectors.
+export const kConcreteNumericScalarsAndVectors = [
+...kConcreteIntegerScalarsAndVectors,
+...kConcreteF16ScalarsAndVectors,
+...kConcreteF32ScalarsAndVectors];
 
 
 /// All the scalar and vector types.

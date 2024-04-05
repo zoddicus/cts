@@ -5,7 +5,7 @@ import { TestQueryWithExpectation } from '../../internal/query/query.js';
 import { timeout } from '../../util/timeout.js';
 import { assert } from '../../util/util.js';
 
-import { CTSOptions, kDefaultCTSOptions } from './options.js';
+import { CTSOptions, WorkerMode, kDefaultCTSOptions } from './options.js';
 import { WorkerTestRunRequest } from './utils_worker.js';
 
 /** Query all currently-registered service workers, and unregister them. */
@@ -28,19 +28,21 @@ class TestBaseWorker {
   protected readonly ctsOptions: CTSOptions;
   protected readonly resolvers = new Map<string, (result: LiveTestCaseResult) => void>();
 
-  constructor(worker: CTSOptions['worker'], ctsOptions?: CTSOptions) {
+  constructor(worker: WorkerMode, ctsOptions?: CTSOptions) {
     this.ctsOptions = { ...(ctsOptions || kDefaultCTSOptions), ...{ worker } };
   }
 
   onmessage(ev: MessageEvent) {
     const query: string = ev.data.query;
-    const result: TransferredTestCaseResult = ev.data.result;
-    if (result.logs) {
-      for (const l of result.logs) {
-        Object.setPrototypeOf(l, LogMessageWithStack.prototype);
-      }
-    }
-    this.resolvers.get(query)!(result as LiveTestCaseResult);
+    const transferredResult: TransferredTestCaseResult = ev.data.result;
+
+    const result: LiveTestCaseResult = {
+      status: transferredResult.status,
+      timems: transferredResult.timems,
+      logs: transferredResult.logs?.map(l => new LogMessageWithStack(l)),
+    };
+
+    this.resolvers.get(query)!(result);
     this.resolvers.delete(query);
 
     // MAINTENANCE_TODO(kainino0x): update the Logger with this result (or don't have a logger and
