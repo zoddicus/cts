@@ -3421,6 +3421,14 @@ export const listing = [
       "shader",
       "execution",
       "expression",
+      "precedence"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
       "unary",
       "address_of_and_indirection"
     ]
@@ -3953,6 +3961,15 @@ export const listing = [
       "shader",
       "validation",
       "expression",
+      "binary",
+      "div_rem"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
       "call",
       "builtin",
       "abs"
@@ -3976,6 +3993,26 @@ export const listing = [
       "call",
       "builtin",
       "acosh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "all"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "any"
     ]
   },
   {
@@ -4185,6 +4222,16 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "distance"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "dot4I8Packed"
     ]
   },
@@ -4276,6 +4323,16 @@ export const listing = [
       "call",
       "builtin",
       "frexp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "insertBits"
     ]
   },
   {
@@ -4475,6 +4532,16 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "select"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "sign"
     ]
   },
@@ -4505,6 +4572,16 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "smoothstep"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "sqrt"
     ]
   },
@@ -4526,6 +4603,26 @@ export const listing = [
       "call",
       "builtin",
       "tan"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureGather"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureGatherCompare"
     ]
   },
   {
@@ -4635,6 +4732,56 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "unpack2x16float"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack2x16snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack2x16unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4x8snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4x8unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "unpack4xI8"
     ]
   },
@@ -4656,6 +4803,22 @@ export const listing = [
       "call",
       "builtin",
       "workgroupUniformLoad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "overload_resolution"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "precedence"
     ]
   },
   {
@@ -4892,6 +5055,14 @@ export const listing = [
       "validation",
       "parse",
       "semicolon"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "shadow_builtins"
     ]
   },
   {
