@@ -4422,6 +4422,16 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "mix"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "modf"
     ]
   },
@@ -4433,6 +4443,16 @@ export const listing = [
       "call",
       "builtin",
       "normalize"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack2x16float"
     ]
   },
   {
@@ -5098,6 +5118,14 @@ export const listing = [
       "shader",
       "validation",
       "parse",
+      "phony"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
       "pipeline_stage"
     ]
   },
@@ -5257,6 +5285,14 @@ export const listing = [
     "file": [
       "shader",
       "validation",
+      "statement",
+      "phony"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
       "types",
       "alias"
     ]
@@ -5283,6 +5319,14 @@ export const listing = [
       "validation",
       "types",
       "matrix"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "pointer"
     ]
   },
   {
