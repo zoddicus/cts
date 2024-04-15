@@ -4372,6 +4372,16 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "ldexp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "length"
     ]
   },
@@ -5102,6 +5112,14 @@ export const listing = [
       "shader",
       "validation",
       "parse",
+      "increment_decrement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
       "literal"
     ]
   },
@@ -5286,6 +5304,14 @@ export const listing = [
       "shader",
       "validation",
       "statement",
+      "increment_decrement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
       "phony"
     ]
   },
@@ -5311,6 +5337,14 @@ export const listing = [
       "validation",
       "types",
       "atomics"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "enumerant"
     ]
   },
   {
