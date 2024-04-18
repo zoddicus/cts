@@ -3936,6 +3936,24 @@ export const listing = [
       "validation",
       "expression",
       "access",
+      "matrix"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "access",
+      "structure"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "access",
       "vector"
     ]
   },
@@ -4721,6 +4739,16 @@ export const listing = [
       "expression",
       "call",
       "builtin",
+      "textureDimensions"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
       "textureGather"
     ]
   },
@@ -4742,6 +4770,36 @@ export const listing = [
       "call",
       "builtin",
       "textureLoad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumLayers"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumLevels"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumSamples"
     ]
   },
   {
@@ -5138,6 +5196,14 @@ export const listing = [
       "validation",
       "parse",
       "const_assert"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "continue"
     ]
   },
   {
