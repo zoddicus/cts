@@ -355,12 +355,12 @@ export class LimitTestsImpl extends GPUTestBase {
     requiredFeatures?: GPUFeatureName[]
   ) {
     if (shouldReject) {
-      this.shouldReject('OperationError', adapter.requestDevice({ requiredLimits }), {
+      this.shouldReject('OperationError', this.requestDeviceTracked(adapter, { requiredLimits }), {
         allowMissingStack: true,
       });
       return undefined;
     } else {
-      return await adapter.requestDevice({ requiredLimits, requiredFeatures });
+      return this.requestDeviceTracked(adapter, { requiredLimits, requiredFeatures });
     }
   }
 
@@ -892,20 +892,16 @@ export class LimitTestsImpl extends GPUTestBase {
 
     switch (encoderType) {
       case 'render': {
-        const buffer = this.trackForCleanup(
-          device.createBuffer({
-            size: 16,
-            usage: GPUBufferUsage.UNIFORM,
-          })
-        );
+        const buffer = this.createBufferTracked({
+          size: 16,
+          usage: GPUBufferUsage.UNIFORM,
+        });
 
-        const texture = this.trackForCleanup(
-          device.createTexture({
-            size: [1, 1],
-            format: 'rgba8unorm',
-            usage: GPUTextureUsage.RENDER_ATTACHMENT,
-          })
-        );
+        const texture = this.createTextureTracked({
+          size: [1, 1],
+          format: 'rgba8unorm',
+          usage: GPUTextureUsage.RENDER_ATTACHMENT,
+        });
 
         const layout = device.createBindGroupLayout({
           entries: [
@@ -952,12 +948,10 @@ export class LimitTestsImpl extends GPUTestBase {
       }
 
       case 'renderBundle': {
-        const buffer = this.trackForCleanup(
-          device.createBuffer({
-            size: 16,
-            usage: GPUBufferUsage.UNIFORM,
-          })
-        );
+        const buffer = this.createBufferTracked({
+          size: 16,
+          usage: GPUBufferUsage.UNIFORM,
+        });
 
         const layout = device.createBindGroupLayout({
           entries: [
@@ -1027,12 +1021,10 @@ export class LimitTestsImpl extends GPUTestBase {
 
     switch (encoderType) {
       case 'compute': {
-        const buffer = this.trackForCleanup(
-          device.createBuffer({
-            size: 16,
-            usage: GPUBufferUsage.UNIFORM,
-          })
-        );
+        const buffer = this.createBufferTracked({
+          size: 16,
+          usage: GPUBufferUsage.UNIFORM,
+        });
 
         const layout = device.createBindGroupLayout({
           entries: [
