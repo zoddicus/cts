@@ -231,7 +231,8 @@ fn((t) => {
   const isValid = !t.isCompatibility || entryPoint === 'vsWithoutStorageUsage';
   t.doCreateRenderPipelineTest(async, isValid, {
     layout: 'auto',
-    vertex: { module, entryPoint }
+    vertex: { module, entryPoint },
+    depthStencil: { format: 'depth32float', depthWriteEnabled: true, depthCompare: 'always' }
   });
 });
 
@@ -267,7 +268,7 @@ fn((t) => {
       `
   });
 
-  const isValid = !t.isCompatibility;
+  const isValid = !t.isCompatibility || entryPoint === 'csWithoutDepthUsage';
   t.doCreateComputePipelineTest(async, isValid, {
     layout: 'auto',
     compute: { module, entryPoint }
@@ -301,9 +302,10 @@ fn((t) => {
       `
   });
 
-  const isValid = !t.isCompatibility;
+  const isValid = !t.isCompatibility || entryPoint === 'vsWithoutDepthUsage';
   t.doCreateRenderPipelineTest(async, isValid, {
     layout: 'auto',
-    vertex: { module, entryPoint }
+    vertex: { module, entryPoint },
+    depthStencil: { format: 'depth32float', depthWriteEnabled: true, depthCompare: 'always' }
   });
 });
