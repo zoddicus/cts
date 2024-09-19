@@ -305,6 +305,8 @@
 <meta name=variant content='?q=webgpu:api,validation,buffer,mapping:unmap,state,mappingPending:*'>
 <meta name=variant content='?q=webgpu:api,validation,buffer,mapping:gc_behavior,mappedAtCreation:*'>
 <meta name=variant content='?q=webgpu:api,validation,buffer,mapping:gc_behavior,mapAsync:*'>
+<meta name=variant content='?q=webgpu:api,validation,capability_checks,features,clip_distances:createRenderPipeline,at_over:*'>
+<meta name=variant content='?q=webgpu:api,validation,capability_checks,features,clip_distances:createRenderPipeline,max_vertex_output_location:*'>
 <meta name=variant content='?q=webgpu:api,validation,capability_checks,features,query_types:createQuerySet:*'>
 <meta name=variant content='?q=webgpu:api,validation,capability_checks,features,query_types:timestamp:*'>
 <meta name=variant content='?q=webgpu:api,validation,capability_checks,features,texture_formats:texture_descriptor:*'>
@@ -1925,6 +1927,7 @@
 <meta name=variant content='?q=webgpu:shader,execution,shader_io,shared_structs:shared_between_stages:*'>
 <meta name=variant content='?q=webgpu:shader,execution,shader_io,shared_structs:shared_with_non_entry_point_function:*'>
 <meta name=variant content='?q=webgpu:shader,execution,shader_io,user_io:passthrough:*'>
+<meta name=variant content='?q=webgpu:shader,execution,shader_io,vertex_builtins:outputs,clip_distances:*'>
 <meta name=variant content='?q=webgpu:shader,execution,shader_io,workgroup_size:workgroup_size:*'>
 <meta name=variant content='?q=webgpu:shader,execution,shadow:declaration:*'>
 <meta name=variant content='?q=webgpu:shader,execution,shadow:builtin:*'>
@@ -2060,6 +2063,11 @@
 <meta name=variant content='?q=webgpu:shader,validation,expression,binary,div_rem:scalar_vector_out_of_range:*'>
 <meta name=variant content='?q=webgpu:shader,validation,expression,binary,div_rem:invalid_type_with_itself:*'>
 <meta name=variant content='?q=webgpu:shader,validation,expression,binary,parse:all:*'>
+<meta name=variant content='?q=webgpu:shader,validation,expression,binary,short_circuiting_and_or:scalar_vector:*'>
+<meta name=variant content='?q=webgpu:shader,validation,expression,binary,short_circuiting_and_or:invalid_types:*'>
+<meta name=variant content='?q=webgpu:shader,validation,expression,binary,short_circuiting_and_or:invalid_rhs_const:*'>
+<meta name=variant content='?q=webgpu:shader,validation,expression,binary,short_circuiting_and_or:invalid_rhs_override:*'>
+<meta name=variant content='?q=webgpu:shader,validation,expression,binary,short_circuiting_and_or:invalid_array_count_on_rhs:*'>
 <meta name=variant content='?q=webgpu:shader,validation,expression,call,builtin,abs:values:*'>
 <meta name=variant content='?q=webgpu:shader,validation,expression,call,builtin,abs:parameters:*'>
 <meta name=variant content='?q=webgpu:shader,validation,expression,call,builtin,acos:values:*'>
