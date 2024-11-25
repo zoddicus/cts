@@ -1116,6 +1116,16 @@ export const listing = [
       "encoding",
       "cmds",
       "render",
+      "indirect_multi_draw"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
+      "render",
       "setIndexBuffer"
     ]
   },
@@ -1301,6 +1311,13 @@ export const listing = [
       "api",
       "validation",
       "layout_shader_compat"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "non_filterable_texture"
     ]
   },
   {
@@ -1679,6 +1696,14 @@ export const listing = [
       "encoding",
       "programmable",
       "pipeline_bind_group_compat"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "pipeline_creation"
     ]
   },
   {
@@ -3394,6 +3419,16 @@ export const listing = [
       "call",
       "builtin",
       "textureStore"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "texture_utils"
     ]
   },
   {

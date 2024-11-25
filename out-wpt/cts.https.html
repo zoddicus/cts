@@ -33,6 +33,8 @@
 <script type=module src=/webgpu/common/runtime/wpt.js></script>
 
 <meta name=variant content='?q=webgpu:api,operation,adapter,info:adapter_info:*'>
+<meta name=variant content='?q=webgpu:api,operation,adapter,info:same_object:*'>
+<meta name=variant content='?q=webgpu:api,operation,adapter,info:device_matches_adapter:*'>
 <meta name=variant content='?q=webgpu:api,operation,adapter,requestAdapter:requestAdapter:*'>
 <meta name=variant content='?q=webgpu:api,operation,adapter,requestAdapter:requestAdapter_no_parameters:*'>
 <meta name=variant content='?q=webgpu:api,operation,adapter,requestDevice:default:*'>
@@ -535,6 +537,12 @@
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_buffer_usage:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_offset_alignment:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_draw:indirect_offset_oob:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_multi_draw:buffers_state:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_multi_draw:buffers,device_mismatch:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_multi_draw:indirect_buffer_usage:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_multi_draw:offsets_alignment:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_multi_draw:indirectBuffer_range:*'>
+<meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,indirect_multi_draw:drawCountBuffer_range:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setIndexBuffer:index_buffer_state:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setIndexBuffer:index_buffer,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,encoding,cmds,render,setIndexBuffer:index_buffer_usage:*'>
@@ -648,6 +656,7 @@
 <meta name=variant content='?q=webgpu:api,validation,image_copy,texture_related:size_alignment:*'>
 <meta name=variant content='?q=webgpu:api,validation,image_copy,texture_related:copy_rectangle:*'>
 <meta name=variant content='?q=webgpu:api,validation,layout_shader_compat:pipeline_layout_shader_exact_match:*'>
+<meta name=variant content='?q=webgpu:api,validation,non_filterable_texture:non_filterable_texture_with_filtering_sampler:*'>
 <meta name=variant content='?q=webgpu:api,validation,query_set,create:count:*'>
 <meta name=variant content='?q=webgpu:api,validation,query_set,destroy:twice:*'>
 <meta name=variant content='?q=webgpu:api,validation,query_set,destroy:invalid_queryset:*'>
@@ -903,6 +912,7 @@
 <meta name=variant content='?q=webgpu:compat,api,validation,encoding,programmable,pipeline_bind_group_compat:twoDifferentTextureViews,render_pass,unused:*'>
 <meta name=variant content='?q=webgpu:compat,api,validation,encoding,programmable,pipeline_bind_group_compat:twoDifferentTextureViews,compute_pass,used:*'>
 <meta name=variant content='?q=webgpu:compat,api,validation,encoding,programmable,pipeline_bind_group_compat:twoDifferentTextureViews,compute_pass,unused:*'>
+<meta name=variant content='?q=webgpu:compat,api,validation,pipeline_creation:depth_textures:*'>
 <meta name=variant content='?q=webgpu:compat,api,validation,render_pipeline,depth_stencil_state:depthBiasClamp:*'>
 <meta name=variant content='?q=webgpu:compat,api,validation,render_pipeline,fragment_state:colorState:*'>
 <meta name=variant content='?q=webgpu:compat,api,validation,render_pipeline,unsupported_wgsl:sample_mask:*'>
@@ -957,6 +967,7 @@
 <meta name=variant content='?q=webgpu:shader,execution,expression,access,matrix,index:concrete_float_element:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,access,matrix,index:abstract_float_column:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,access,matrix,index:abstract_float_element:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,access,matrix,index:non_const_index:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,access,structure,index:buffer:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,access,structure,index:buffer_align:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,access,structure,index:buffer_size:*'>
@@ -1681,14 +1692,13 @@
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureSampleLevel:depth_2d_coords:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureSampleLevel:depth_array_2d_coords:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureSampleLevel:depth_3d_coords:*'>
-<meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureStore:store_1d_coords:*'>
-<meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureStore:store_2d_coords:*'>
-<meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureStore:store_array_2d_coords:*'>
-<meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureStore:store_3d_coords:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureStore:texel_formats:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureStore:bgra8unorm_swizzle:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureStore:out_of_bounds:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,textureStore:out_of_bounds_array:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,texture_utils:createTextureWithRandomDataAndGetTexels_with_generator:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,texture_utils:readTextureToTexelViews:*'>
+<meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,texture_utils:weights:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,transpose:abstract_float:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,transpose:f32:*'>
 <meta name=variant content='?q=webgpu:shader,execution,expression,call,builtin,transpose:f16:*'>
