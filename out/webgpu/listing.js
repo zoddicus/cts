@@ -212,6 +212,14 @@ export const listing = [
       "api",
       "operation",
       "device",
+      "all_limits_and_features"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "device",
       "lost"
     ]
   },
@@ -502,6 +510,14 @@ export const listing = [
       "operation",
       "sampling",
       "lod_clamp"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "sampling",
+      "sampler_texture"
     ]
   },
   {
@@ -3249,6 +3265,16 @@ export const listing = [
       "call",
       "builtin",
       "subgroupMul"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupShuffle"
     ]
   },
   {
