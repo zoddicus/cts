@@ -110,7 +110,6 @@ g.test('data_types')
     const type = kDataTypes[t.params.type];
     if (type.requiresF16()) {
       features.push('shader-f16');
-      features.push('subgroups-f16' as GPUFeatureName);
     }
     t.selectDeviceOrSkipTestCase(features);
   })
@@ -119,7 +118,7 @@ g.test('data_types')
     const type = kDataTypes[t.params.type];
     let enables = 'enable subgroups;\n';
     if (type.requiresF16()) {
-      enables += 'enable f16;\nenable subgroups_f16;\n';
+      enables += 'enable f16;\n';
     }
 
     const broadcast =
@@ -444,12 +443,12 @@ g.test('compute,split')
     const testcase = kPredicateCases[t.params.predicate];
     const wgThreads = t.params.wgSize[0] * t.params.wgSize[1] * t.params.wgSize[2];
 
-    interface SubgroupLimits extends GPUSupportedLimits {
-      minSubgroupSize: number;
-      maxSubgroupSize: number;
+    interface SubgroupProperties extends GPUAdapterInfo {
+      subgroupMinSize: number;
+      subgroupMaxSize: number;
     }
-    const { minSubgroupSize, maxSubgroupSize } = t.device.limits as SubgroupLimits;
-    for (let size = minSubgroupSize; size <= maxSubgroupSize; size *= 2) {
+    const { subgroupMinSize, subgroupMaxSize } = t.device.adapterInfo as SubgroupProperties;
+    for (let size = subgroupMinSize; size <= subgroupMaxSize; size *= 2) {
       t.skipIf(!testcase.filter(t.params.id, size), 'Skipping potential undefined behavior');
     }
 
@@ -669,22 +668,24 @@ g.test('fragment')
   })
   .fn(async t => {
     const innerTexels = (t.params.size[0] - 1) * (t.params.size[1] - 1);
-    interface SubgroupLimits extends GPUSupportedLimits {
-      maxSubgroupSize: number;
+    interface SubgroupProperties extends GPUAdapterInfo {
+      subgroupMaxSize: number;
     }
-    const { maxSubgroupSize } = t.device.limits as SubgroupLimits;
-    t.skipIf(innerTexels < maxSubgroupSize, 'Too few texels to be reliable');
+    const { subgroupMaxSize } = t.device.adapterInfo as SubgroupProperties;
+    t.skipIf(innerTexels < subgroupMaxSize, 'Too few texels to be reliable');
 
     const broadcast =
       t.params.id === 0
-        ? `subgroupBroadcastFirst(input[linear])`
-        : `subgroupBroadcast(input[linear], ${t.params.id})`;
+        ? `subgroupBroadcastFirst(input[linear].x)`
+        : `subgroupBroadcast(input[linear].x, ${t.params.id})`;
+    const texels = t.params.size[0] * t.params.size[1];
+    const inputData = new Uint32Array([...iterRange(texels, x => x)]);
 
     const fsShader = `
 enable subgroups;
 
 @group(0) @binding(0)
-var<storage> input : array<u32>;
+var<uniform> input : array<vec4u, ${inputData.length}>;
 
 @fragment
 fn main(
@@ -697,8 +698,6 @@ fn main(
   return vec4u(${broadcast}, id, size, linear);
 }`;
 
-    const texels = t.params.size[0] * t.params.size[1];
-    const inputData = new Uint32Array([...iterRange(texels, x => x)]);
     await runFragmentTest(
       t,
       t.params.format,

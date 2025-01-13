@@ -293,6 +293,14 @@ export const listing = [
     "file": [
       "api",
       "operation",
+      "pipeline",
+      "pipeline_layout_created_with_null_bind_group_layout"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
       "queue",
       "writeBuffer"
     ]
@@ -550,14 +558,6 @@ export const listing = [
       "operation",
       "texture_view",
       "format_reinterpretation"
-    ]
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "texture_view",
-      "read"
     ]
   },
   {
@@ -858,7 +858,43 @@ export const listing = [
       "validation",
       "capability_checks",
       "limits",
+      "maxStorageBuffersInFragmentStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageBuffersInVertexStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
       "maxStorageBuffersPerShaderStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageTexturesInFragmentStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageTexturesInVertexStage"
     ]
   },
   {
@@ -1689,6 +1725,22 @@ export const listing = [
       "compat",
       "api",
       "validation",
+      "createBindGroupLayout_limits"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "createPipelineLayout"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
       "encoding",
       "cmds",
       "copyTextureToBuffer"
@@ -1738,6 +1790,15 @@ export const listing = [
       "validation",
       "render_pipeline",
       "fragment_state"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "render_pipeline",
+      "in_stage_limits"
     ]
   },
   {
@@ -3255,6 +3316,26 @@ export const listing = [
       "call",
       "builtin",
       "subgroupBroadcast"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupElect"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupMinMax"
     ]
   },
   {
@@ -6031,6 +6112,13 @@ export const listing = [
       "web_platform",
       "copyToTexture",
       "image"
+    ]
+  },
+  {
+    "file": [
+      "web_platform",
+      "copyToTexture",
+      "image_file"
     ]
   },
   {
