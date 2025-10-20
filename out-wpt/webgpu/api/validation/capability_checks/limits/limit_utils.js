@@ -2,11 +2,7 @@
 * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
 **/import { kUnitCaseParamsBuilder } from '../../../../../common/framework/params_builder.js';import { makeTestGroup } from '../../../../../common/framework/test_group.js';import { getGPU } from '../../../../../common/util/navigator_gpu.js';
 import { assert, range, reorder } from '../../../../../common/util/util.js';
-import {
-  getDefaultLimits,
-  getDefaultLimitsForAdapter } from
-
-'../../../../capability_info.js';
+import { getDefaultLimitsForCTS } from '../../../../capability_info.js';
 import { GPUConst } from '../../../../constants.js';
 import { GPUTestBase } from '../../../../gpu_test.js';
 
@@ -50,7 +46,7 @@ export function getPipelineTypeForBindingCombination(bindingCombination) {
   }
 }
 
-export function getStageVisibilityForBinidngCombination(bindingCombination) {
+export function getStageVisibilityForBindingCombination(bindingCombination) {
   switch (bindingCombination) {
     case 'vertex':
       return GPUConst.ShaderStage.VERTEX;
@@ -302,7 +298,7 @@ export const kMinimumLimitValueTests = [
 
 
 export function getDefaultLimitForAdapter(adapter, limit) {
-  const limitInfo = getDefaultLimitsForAdapter(adapter);
+  const limitInfo = getDefaultLimitsForCTS();
   return limitInfo[limit].default;
 }
 
@@ -409,7 +405,8 @@ export class LimitTestsImpl extends GPUTestBase {
     const limit = this.limit;
     // MAINTENANCE_TODO: consider removing this skip if the spec has no optional limits.
     this.skipIf(
-      this._adapter?.limits[limit] === undefined && !!this.limitTestParams.limitOptional,
+      this._adapter?.limits[limit] === undefined && !!this.limitTestParams.limitOptional ||
+      getDefaultLimitsForCTS()[limit] === undefined,
       `${limit} is missing but optional for now`
     );
     this.defaultLimit = getDefaultLimitForAdapter(this.adapter, limit);
@@ -429,7 +426,7 @@ export class LimitTestsImpl extends GPUTestBase {
   }
 
   getDefaultLimits() {
-    return getDefaultLimits(this.isCompatibility ? 'compatibility' : 'core');
+    return getDefaultLimitsForCTS();
   }
 
   getDefaultLimit(limit) {
@@ -1204,6 +1201,12 @@ export class LimitTestsImpl extends GPUTestBase {
 
   skipIfNotEnoughStorageBuffersInStage(visibility, numRequired) {
     const { device } = this;
+
+    this.skipIf(
+      numRequired > device.limits.maxStorageBuffersPerShaderStage,
+      `maxStorageBuffersPerShaderStage = ${device.limits.maxSamplersPerShaderStage} which is less than ${numRequired}`
+    );
+
     this.skipIf(
       this.isCompatibility &&
       // If we're using the fragment stage
@@ -1275,42 +1278,46 @@ limit,
 
 dependentLimitName)
 {
-  g.test(`validate,${dependentLimitName}`).
+  g.test(`auto_upgrades_per_stage,${dependentLimitName}`).
   desc(
-    `Test that adapter.limit.${limit} and requiredLimits.${limit} must be <= ${dependentLimitName}`
+    `Test that
+       * adapter.limit.${limit} < adapter.limit.${dependentLimitName}
+       * requiredLimits.${limit} auto-upgrades device.limits.${dependentLimitName}
+       `
   ).
-  params((u) => u.combine('useMax', [true, false])) // true case should not reject.
-  .fn(async (t) => {
-    const { useMax } = t.params;
+  fn(async (t) => {
     const { adapterLimit: maximumLimit, adapter } = t;
 
-    const dependentLimit = adapter.limits[dependentLimitName];
-    t.expect(
-      maximumLimit <= dependentLimit,
-      `maximumLimit(${maximumLimit}) is <= adapter.limits.${dependentLimitName}(${dependentLimit})`
-    );
+    {
+      const dependentLimit = adapter.limits[dependentLimitName];
+      t.expect(
+        maximumLimit <= dependentLimit,
+        `maximumLimit(${maximumLimit}) is <= adapter.limits.${dependentLimitName}(${dependentLimit})`
+      );
+    }
 
-    const dependentEffectiveLimits = useMax ?
-    dependentLimit :
-    t.getDefaultLimit(dependentLimitName);
-    const shouldReject = maximumLimit > dependentEffectiveLimits;
-    t.debug(
-      `${limit}(${maximumLimit}) > ${dependentLimitName}(${dependentEffectiveLimits}) shouldReject: ${shouldReject}`
-    );
+    const shouldReject = false;
     const device = await t.requestDeviceWithLimits(
       adapter,
       {
-        [limit]: maximumLimit,
-        ...(useMax && {
-          [dependentLimitName]: dependentLimit
-        })
+        [limit]: maximumLimit
       },
       shouldReject
     );
+
+    {
+      const dependentLimit = device.limits[dependentLimitName];
+      const actualLimit = device.limits[limit];
+      t.expect(
+        dependentLimit >= actualLimit,
+        `device.limits.${dependentLimitName}(${dependentLimit}) is >= adapter.limits.${limit}(${actualLimit})`
+      );
+    }
+
     device?.destroy();
   });
 
-  g.test(`auto_upgrade,${dependentLimitName}`).
+  g.test(`auto_upgraded_from_per_stage,${dependentLimitName}`).
   desc(
     `Test that adapter.limit.${limit} is automatically upgraded to ${dependentLimitName} except in compat.`
   ).

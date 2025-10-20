@@ -57,19 +57,20 @@ export async function assertReject(
   p: Promise<unknown>,
   { allowMissingStack = false, message }: ExceptionCheckOptions = {}
 ): Promise<void> {
-  try {
-    await p;
-    unreachable(message);
-  } catch (ex) {
-    // Asserted as expected
-    if (!allowMissingStack) {
-      const m = message ? ` (${message})` : '';
-      assert(
-        ex instanceof Error && typeof ex.stack === 'string',
-        'threw as expected, but missing stack' + m
-      );
+  await p.then(
+    () => {
+      unreachable(message);
+    },
+    ex => {
+      assert(ex instanceof Error, 'rejected with a non-Error object');
+      assert(ex.name === expectedName, `rejected with name ${ex.name} instead of ${expectedName}`);
+      // Asserted as expected
+      if (!allowMissingStack) {
+        const m = message ? ` (${message})` : '';
+        assert(typeof ex.stack === 'string', 'threw as expected, but missing stack' + m);
+      }
     }
-  }
+  );
 }
 
 /**
@@ -300,6 +301,16 @@ export function reorder<R>(order: ReorderOrder, arr: R[]): R[] {
       return shiftByHalf(arr);
     }
   }
+}
+
+/**
+ * A typed version of Object.entries
+ */
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+export function typedEntries<T extends Record<string, any>>(obj: T): Array<[keyof T, T[keyof T]]> {
+  // The cast is done once, inside the helper function,
+  // keeping the call site clean and type-safe.
+  return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
 }
 
 const TypedArrayBufferViewInstances = [

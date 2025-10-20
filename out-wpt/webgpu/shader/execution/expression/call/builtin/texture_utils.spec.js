@@ -4,8 +4,11 @@
 Tests for texture_utils.ts
 `;import { makeTestGroup } from '../../../../../../common/framework/test_group.js';
 import { assert } from '../../../../../../common/util/util.js';
-import { isMultisampledTextureFormat, kDepthStencilFormats } from '../../../../../format_info.js';
-import { GPUTest } from '../../../../../gpu_test.js';
+import {
+  isTextureFormatPossiblyMultisampled,
+  kDepthStencilFormats } from
+'../../../../../format_info.js';
+import { AllFeaturesMaxLimitsGPUTest } from '../../../../../gpu_test.js';
 import { getTextureDimensionFromView, virtualMipSize } from '../../../../../util/texture/base.js';
 import {
   kTexelRepresentationInfo } from
@@ -19,14 +22,13 @@ import {
   convertPerTexelComponentToResultFormat,
   createTextureWithRandomDataAndGetTexels,
   graphWeights,
-  isSupportedViewFormatCombo,
   makeRandomDepthComparisonTexelGenerator,
   queryMipLevelMixWeightsForDevice,
   readTextureToTexelViews,
   texelsApproximatelyEqual } from
 './texture_utils.js';
 
-export const g = makeTestGroup(GPUTest);
+export const g = makeTestGroup(AllFeaturesMaxLimitsGPUTest);
 
 function texelFormat(texel, rep) {
   return rep.componentOrder.map((component) => `${component}: ${texel[component]}`).join(', ');
@@ -43,15 +45,13 @@ desc(
 params((u) =>
 u.
 combine('format', kDepthStencilFormats).
-combine('viewDimension', ['2d', '2d-array', 'cube', 'cube-array']).
-filter((t) => isSupportedViewFormatCombo(t.format, t.viewDimension))
+combine('viewDimension', ['2d', '2d-array', 'cube', 'cube-array'])
 ).
-beforeAllSubcases((t) => {
-  t.skipIfTextureViewDimensionNotSupported(t.params.viewDimension);
-  t.selectDeviceForTextureFormatOrSkipTestCase(t.params.format);
-}).
 fn(async (t) => {
   const { format, viewDimension } = t.params;
+  t.skipIfTextureFormatNotSupported(format);
+  t.skipIfTextureViewDimensionNotSupported(viewDimension);
+  t.skipIfTextureFormatAndViewDimensionNotCompatible(format, viewDimension);
   // choose an odd size (9) so we're more likely to test alignment issue.
   const size = chooseTextureSize({ minSize: 9, minBlocks: 4, format, viewDimension });
   t.debug(`size: ${size.map((v) => v.toString()).join(', ')}`);
@@ -85,19 +85,20 @@ combineWithParams([
 { srcFormat: 'stencil8', texelViewFormat: 'stencil8' }]
 ).
 combine('viewDimension', ['1d', '2d', '2d-array', '3d', 'cube', 'cube-array']).
-filter((t) => isSupportedViewFormatCombo(t.srcFormat, t.viewDimension)).
 combine('sampleCount', [1, 4]).
 unless(
   (t) =>
   t.sampleCount > 1 && (
-  !isMultisampledTextureFormat(t.srcFormat) || t.viewDimension !== '2d')
+  !isTextureFormatPossiblyMultisampled(t.srcFormat) || t.viewDimension !== '2d')
 )
 ).
-beforeAllSubcases((t) => {
-  t.skipIfTextureViewDimensionNotSupported(t.params.viewDimension);
-}).
 fn(async (t) => {
   const { srcFormat, texelViewFormat, viewDimension, sampleCount } = t.params;
+  t.skipIfTextureViewDimensionNotSupported(viewDimension);
+  t.skipIfTextureFormatAndViewDimensionNotCompatible(srcFormat, viewDimension);
+  if (sampleCount > 1) {
+    t.skipIfTextureFormatNotMultisampled(srcFormat);
+  }
   // choose an odd size (9) so we're more likely to test alignment issue.
   const size = chooseTextureSize({ minSize: 9, minBlocks: 4, format: srcFormat, viewDimension });
   t.debug(`size: ${size.map((v) => v.toString()).join(', ')}`);
@@ -106,7 +107,12 @@ fn(async (t) => {
     dimension: getTextureDimensionFromView(viewDimension),
     size,
     mipLevelCount: viewDimension === '1d' || sampleCount > 1 ? 1 : 3,
-    usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING,
+    usage:
+    sampleCount > 1 ?
+    GPUTextureUsage.COPY_DST |
+    GPUTextureUsage.TEXTURE_BINDING |
+    GPUTextureUsage.RENDER_ATTACHMENT :
+    GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING,
     sampleCount,
     ...(t.isCompatibility && { textureBindingViewDimension: viewDimension })
   };
@@ -149,6 +155,7 @@ fn(async (t) => {
             const maxFractionalDiff = 0;
             if (
             !texelsApproximatelyEqual(
+              t.device,
               actualRGBA,
               actualMipLevelTexelView.format,
               expectedRGBA,

@@ -1,8 +1,6 @@
 /**
 * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
-**/import * as fs from 'fs';
-
-import { dataCache } from '../framework/data_cache.js';
+**/import { dataCache } from '../framework/data_cache.js';
 import { getResourcePath, setBaseResourcePath } from '../framework/resources.js';
 import { globalTestConfig } from '../framework/test_config.js';
 import { DefaultTestFileLoader } from '../internal/file_loader.js';
@@ -113,6 +111,12 @@ for (let i = 0; i < sys.args.length; ++i) {
       globalTestConfig.forceFallbackAdapter = true;
     } else if (a === '--enforce-default-limits') {
       globalTestConfig.enforceDefaultLimits = true;
+    } else if (a === '--block-all-features') {
+      globalTestConfig.blockAllFeatures = true;
+    } else if (a === '--subcases-between-attempting-gc') {
+      globalTestConfig.subcasesBetweenAttemptingGC = Number(sys.args[++i]);
+    } else if (a === '--cases-between-replacing-device') {
+      globalTestConfig.casesBetweenReplacingDevice = Number(sys.args[++i]);
     } else if (a === '--log-to-websocket') {
       globalTestConfig.logToWebSocket = true;
     } else {
@@ -127,9 +131,7 @@ for (let i = 0; i < sys.args.length; ++i) {
 let codeCoverage = undefined;
 
 if (globalTestConfig.compatibility || globalTestConfig.forceFallbackAdapter) {
-  // MAINTENANCE_TODO: remove compatibilityMode (and the typecast) once no longer needed.
   setDefaultRequestAdapterOptions({
-    compatibilityMode: globalTestConfig.compatibility,
     featureLevel: globalTestConfig.compatibility ? 'compatibility' : 'core',
     forceFallbackAdapter: globalTestConfig.forceFallbackAdapter
   });
@@ -152,13 +154,16 @@ Did you remember to build with code coverage instrumentation enabled?`
 dataCache.setStore({
   load: (path) => {
     return new Promise((resolve, reject) => {
-      fs.readFile(getResourcePath(`cache/${path}`), (err, data) => {
-        if (err !== null) {
-          reject(err.message);
-        } else {
-          resolve(data);
+      sys.readFile(
+        getResourcePath(`cache/${path}`),
+        (err, data) => {
+          if (err !== null) {
+            reject(err.message);
+          } else {
+            resolve(data);
+          }
         }
-      });
+      );
     });
   }
 });
@@ -284,6 +289,7 @@ Failed               = ${rpt(failed.length)}`);
   if (failed.length || warned.length) {
     sys.exit(1);
   }
+  sys.exit(0);
 })().catch((ex) => {
   console.log(ex.stack ?? ex.toString());
   sys.exit(1);

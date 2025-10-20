@@ -63,6 +63,14 @@ export const listing = [
       "api",
       "operation",
       "buffers",
+      "createBindGroup"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "buffers",
       "map"
     ]
   },
@@ -228,6 +236,14 @@ export const listing = [
       "api",
       "operation",
       "labels"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "limits",
+      "max_combined_limits"
     ]
   },
   {
@@ -517,14 +533,6 @@ export const listing = [
       "api",
       "operation",
       "sampling",
-      "lod_clamp"
-    ]
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "sampling",
       "sampler_texture"
     ]
   },
@@ -558,6 +566,14 @@ export const listing = [
       "operation",
       "texture_view",
       "format_reinterpretation"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "texture_view",
+      "texture_component_swizzle"
     ]
   },
   {
@@ -678,7 +694,34 @@ export const listing = [
       "validation",
       "capability_checks",
       "features",
+      "texture_component_swizzle"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "features",
       "texture_formats"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "features",
+      "texture_formats_tier1"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "features",
+      "texture_formats_tier2"
     ]
   },
   {
@@ -1859,6 +1902,12 @@ export const listing = [
     "file": [
       "idl",
       "constructable"
+    ]
+  },
+  {
+    "file": [
+      "idl",
+      "javascript"
     ]
   },
   {
@@ -3984,6 +4033,13 @@ export const listing = [
       "execution",
       "memory_model",
       "weak"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "override"
     ]
   },
   {

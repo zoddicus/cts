@@ -3,6 +3,7 @@
 
 /* eslint-disable no-sparse-arrays */
 
+import { globalTestConfig } from '../common/framework/test_config.js';
 import {
   keysOf,
   makeTable,
@@ -387,18 +388,18 @@ export const kPerStageBindingLimits: {
     /** Which `PerShaderStage` binding limit class. */
     readonly class: k;
     /** Maximum number of allowed bindings in that class. */
-    readonly maxLimits: { [key in ShaderStageKey]: (typeof kLimits)[number] };
+    readonly maxLimits: { [key in ShaderStageKey]: (typeof kPossibleLimits)[number] };
     // Add fields as needed
   };
 } =
   /* prettier-ignore */ {
   'uniformBuf':          { class: 'uniformBuf', maxLimits: { COMPUTE: 'maxUniformBuffersPerShaderStage', FRAGMENT: 'maxUniformBuffersPerShaderStage', VERTEX: 'maxUniformBuffersPerShaderStage' } },
-  'storageBuf':          { class: 'storageBuf', maxLimits: { COMPUTE: 'maxStorageBuffersPerShaderStage', FRAGMENT: 'maxStorageBuffersInFragmentStage', VERTEX: 'maxStorageBuffersInVertexStage' } },
+  'storageBuf':          { class: 'storageBuf', maxLimits: { COMPUTE: 'maxStorageBuffersPerShaderStage', FRAGMENT: 'maxStorageBuffersPerShaderStage', VERTEX: 'maxStorageBuffersPerShaderStage' } },
   'sampler':             { class: 'sampler',    maxLimits: { COMPUTE: 'maxSamplersPerShaderStage', FRAGMENT: 'maxSamplersPerShaderStage', VERTEX: 'maxSamplersPerShaderStage' } },
   'sampledTex':          { class: 'sampledTex', maxLimits: { COMPUTE: 'maxSampledTexturesPerShaderStage', FRAGMENT: 'maxSampledTexturesPerShaderStage', VERTEX: 'maxSampledTexturesPerShaderStage' } },
-  'readonlyStorageTex':  { class: 'readonlyStorageTex', maxLimits: { COMPUTE: 'maxStorageTexturesPerShaderStage', FRAGMENT: 'maxStorageTexturesInFragmentStage', VERTEX: 'maxStorageTexturesInVertexStage' } },
-  'writeonlyStorageTex': { class: 'writeonlyStorageTex', maxLimits: { COMPUTE: 'maxStorageTexturesPerShaderStage', FRAGMENT: 'maxStorageTexturesInFragmentStage', VERTEX: 'maxStorageTexturesInVertexStage' } },
-  'readwriteStorageTex': { class: 'readwriteStorageTex', maxLimits: { COMPUTE: 'maxStorageTexturesPerShaderStage', FRAGMENT: 'maxStorageTexturesInFragmentStage', VERTEX: 'maxStorageTexturesInVertexStage'} },
+  'readonlyStorageTex':  { class: 'readonlyStorageTex', maxLimits: { COMPUTE: 'maxStorageTexturesPerShaderStage', FRAGMENT: 'maxStorageTexturesPerShaderStage', VERTEX: 'maxStorageTexturesPerShaderStage' } },
+  'writeonlyStorageTex': { class: 'writeonlyStorageTex', maxLimits: { COMPUTE: 'maxStorageTexturesPerShaderStage', FRAGMENT: 'maxStorageTexturesPerShaderStage', VERTEX: 'maxStorageTexturesPerShaderStage' } },
+  'readwriteStorageTex': { class: 'readwriteStorageTex', maxLimits: { COMPUTE: 'maxStorageTexturesPerShaderStage', FRAGMENT: 'maxStorageTexturesPerShaderStage', VERTEX: 'maxStorageTexturesPerShaderStage'} },
 };
 
 /**
@@ -411,7 +412,7 @@ export const kPerPipelineBindingLimits: {
     /**
      * The name of the limit for the maximum number of allowed bindings with `hasDynamicOffset: true` in that class.
      */
-    readonly maxDynamicLimit: (typeof kLimits)[number] | '';
+    readonly maxDynamicLimit: (typeof kPossibleLimits)[number] | '';
     // Add fields as needed
   };
 } =
@@ -592,16 +593,22 @@ export function textureBindingEntries(includeUndefined: boolean): readonly BGLEn
  *
  * Note: Generates different `access` options, but not `format` or `viewDimension` options.
  */
-export function storageTextureBindingEntries(): readonly BGLEntry[] {
+export function storageTextureBindingEntries(format: GPUTextureFormat): readonly BGLEntry[] {
   return [
-    { storageTexture: { access: 'write-only', format: 'r32float' } },
-    { storageTexture: { access: 'read-only', format: 'r32float' } },
-    { storageTexture: { access: 'read-write', format: 'r32float' } },
+    { storageTexture: { access: 'write-only', format } },
+    { storageTexture: { access: 'read-only', format } },
+    { storageTexture: { access: 'read-write', format } },
   ] as const;
 }
 /** Generate a list of possible texture-or-storageTexture-typed BGLEntry values. */
-export function sampledAndStorageBindingEntries(includeUndefined: boolean): readonly BGLEntry[] {
-  return [...textureBindingEntries(includeUndefined), ...storageTextureBindingEntries()] as const;
+export function sampledAndStorageBindingEntries(
+  includeUndefined: boolean,
+  format: GPUTextureFormat = 'r32float'
+): readonly BGLEntry[] {
+  return [
+    ...textureBindingEntries(includeUndefined),
+    ...storageTextureBindingEntries(format),
+  ] as const;
 }
 /**
  * Generate a list of possible BGLEntry values of every type, but not variants with different:
@@ -610,11 +617,14 @@ export function sampledAndStorageBindingEntries(includeUndefined: boolean): read
  * - texture.viewDimension
  * - storageTexture.viewDimension
  */
-export function allBindingEntries(includeUndefined: boolean): readonly BGLEntry[] {
+export function allBindingEntries(
+  includeUndefined: boolean,
+  format: GPUTextureFormat = 'r32float'
+): readonly BGLEntry[] {
   return [
     ...bufferBindingEntries(includeUndefined),
     ...samplerBindingEntries(includeUndefined),
-    ...sampledAndStorageBindingEntries(includeUndefined),
+    ...sampledAndStorageBindingEntries(includeUndefined, format),
   ] as const;
 }
 
@@ -730,10 +740,10 @@ const [kLimitInfoKeys, kLimitInfoDefaults, kLimitInfoData] =
   'maxDynamicStorageBuffersPerPipelineLayout': [           ,         4,               4,                          ],
   'maxSampledTexturesPerShaderStage':          [           ,        16,              16,                          ],
   'maxSamplersPerShaderStage':                 [           ,        16,              16,                          ],
-  'maxStorageBuffersInFragmentStage':          [           ,         8,               0,                          ],
+  'maxStorageBuffersInFragmentStage':          [           ,         8,               4,                          ],
   'maxStorageBuffersInVertexStage':            [           ,         8,               0,                          ],
-  'maxStorageBuffersPerShaderStage':           [           ,         8,               4,                          ],
-  'maxStorageTexturesInFragmentStage':         [           ,         4,               0,                          ],
+  'maxStorageBuffersPerShaderStage':           [           ,         8,               8,                          ],
+  'maxStorageTexturesInFragmentStage':         [           ,         4,               4,                          ],
   'maxStorageTexturesInVertexStage':           [           ,         4,               0,                          ],
   'maxStorageTexturesPerShaderStage':          [           ,         4,               4,                          ],
   'maxUniformBuffersPerShaderStage':           [           ,        12,              12,                          ],
@@ -760,11 +770,19 @@ const [kLimitInfoKeys, kLimitInfoDefaults, kLimitInfoData] =
   'maxComputeWorkgroupsPerDimension':          [           ,     65535,           65535,                          ],
 } as const];
 
+// MAINTENANCE_TODO: Remove when the compat spec is merged.
+const kCompatOnlyLimits = [
+  'maxStorageTexturesInFragmentStage',
+  'maxStorageTexturesInVertexStage',
+  'maxStorageBuffersInFragmentStage',
+  'maxStorageBuffersInVertexStage',
+] as const;
+
 /**
  * Feature levels corresponding to core WebGPU and WebGPU
  * in compatibility mode. They can be passed to
  * getDefaultLimits though if you have access to an adapter
- * it's preferred to use getDefaultLimitsForAdapter.
+ * it's preferred to use getDefaultLimits or getDefaultLimitsForCTS
  */
 export const kFeatureLevels = ['core', 'compatibility'] as const;
 export type FeatureLevel = (typeof kFeatureLevels)[number];
@@ -797,20 +815,31 @@ export const kLimitClasses = Object.fromEntries(
 );
 
 export function getDefaultLimits(featureLevel: FeatureLevel) {
-  return kLimitInfos[featureLevel];
+  return Object.fromEntries(
+    Object.entries(kLimitInfos[featureLevel]).filter(([k]) => {
+      // Filter out compat-only limits when in core mode
+      return featureLevel === 'core'
+        ? !kCompatOnlyLimits.includes(k as (typeof kCompatOnlyLimits)[number])
+        : true;
+    })
+  ) as typeof kLimitInfoCore;
 }
 
-export function getDefaultLimitsForAdapter(adapter: GPUAdapter) {
-  // MAINTENANCE_TODO: Remove casts once we have a standardized way to do this
-  // (see https://github.com/gpuweb/gpuweb/pull/5037#issuecomment-2576110161).
-  const adapterExtensions = adapter as unknown as {
-    isCompatibilityMode?: boolean;
-    featureLevel?: string;
-  };
-  const featureLevel =
-    adapterExtensions.featureLevel === 'compatibility' || adapterExtensions.isCompatibilityMode
-      ? 'compatibility'
-      : 'core';
+/**
+ * The CTS is generally designed to run in a single feature level.
+ * Use this function get the default limits for the CTS's feature level
+ * This is needed if you can not use the device limits as you have not yet
+ * created a device. An adapter can not tell you if it supports compatibility
+ * mode. The only way to know is to request a device without `core-features-and-limits`.
+ * If the device you get back doesn't have `core-features-and-limits` then it's
+ * a compatibility device.
+ */
+export function getDefaultLimitsForCTS() {
+  return getDefaultLimits(globalTestConfig.compatibility ? 'compatibility' : 'core');
+}
+
+export function getDefaultLimitsForDevice(device: GPUDevice) {
+  const featureLevel = device.features.has('core-features-and-limits') ? 'core' : 'compatibility';
   return getDefaultLimits(featureLevel);
 }
 
@@ -850,8 +879,8 @@ export function getBindingLimitForBindingType(
   return limits.length > 0 ? Math.min(...limits) : 0;
 }
 
-/** List of all entries of GPUSupportedLimits. */
-export const kLimits = keysOf(kLimitInfoCore);
+/** List of all possible entries of GPUSupportedLimits. */
+export const kPossibleLimits = keysOf(kLimitInfoCore);
 
 /**
  * The number of color attachments to test.
@@ -891,6 +920,12 @@ export const kFeatureNameInfo: {
   'float32-blendable':                  {},
   'clip-distances':                     {},
   'dual-source-blending':               {},
+  'subgroups':                          {},
+  'core-features-and-limits':           {},
+  'texture-formats-tier1':              {},
+  'texture-formats-tier2':              {},
+  'primitive-index':                    {},
+  'texture-component-swizzle':          {},
 };
 /** List of all GPUFeatureName values. */
 export const kFeatureNames = keysOf(kFeatureNameInfo);

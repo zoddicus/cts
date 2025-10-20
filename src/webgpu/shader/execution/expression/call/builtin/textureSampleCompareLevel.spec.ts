@@ -14,6 +14,7 @@ The textureSampleCompareLevel function is the same as textureSampleCompare, exce
 import { makeTestGroup } from '../../../../../../common/framework/test_group.js';
 import { kCompareFunctions } from '../../../../../capability_info.js';
 import { isDepthTextureFormat, kDepthStencilFormats } from '../../../../../format_info.js';
+import { AllFeaturesMaxLimitsGPUTest } from '../../../../../gpu_test.js';
 
 import {
   checkCallResults,
@@ -31,10 +32,9 @@ import {
   TextureCall,
   vec2,
   vec3,
-  WGSLTextureSampleTest,
 } from './texture_utils.js';
 
-export const g = makeTestGroup(WGSLTextureSampleTest);
+export const g = makeTestGroup(AllFeaturesMaxLimitsGPUTest);
 
 g.test('2d_coords')
   .specURL('https://www.w3.org/TR/WGSL/#texturesamplecomparelevel')
@@ -70,7 +70,6 @@ Parameters:
       .combine('samplePoints', kSamplePointMethods)
       .combine('compare', kCompareFunctions)
   )
-  .beforeAllSubcases(t => t.selectDeviceForTextureFormatOrSkipTestCase(t.params.format))
   .fn(async t => {
     const {
       format,
@@ -82,6 +81,7 @@ Parameters:
       compare,
       offset,
     } = t.params;
+    t.skipIfTextureFormatNotSupported(format);
 
     const size = chooseTextureSize({ minSize: 16, minBlocks: 4, format });
 
@@ -171,9 +171,9 @@ Parameters:
       .combine('samplePoints', kCubeSamplePointMethods)
       .combine('compare', kCompareFunctions)
   )
-  .beforeAllSubcases(t => t.selectDeviceForTextureFormatOrSkipTestCase(t.params.format))
   .fn(async t => {
     const { format, stage, samplePoints, mode, filt: minFilter, compare } = t.params;
+    t.skipIfTextureFormatNotSupported(format);
 
     const viewDimension: GPUTextureViewDimension = 'cube';
     const size = chooseTextureSize({ minSize: 16, minBlocks: 2, format, viewDimension });
@@ -279,11 +279,8 @@ Parameters:
       .combine('samplePoints', kSamplePointMethods)
       .combine('A', ['i32', 'u32'] as const)
       .combine('compare', kCompareFunctions)
+      .combine('depthOrArrayLayers', [1, 8] as const)
   )
-  .beforeAllSubcases(t => {
-    t.skipIfTextureFormatNotSupported(t.params.format);
-    t.selectDeviceForTextureFormatOrSkipTestCase(t.params.format);
-  })
   .fn(async t => {
     const {
       format,
@@ -295,16 +292,19 @@ Parameters:
       filt: minFilter,
       compare,
       offset,
+      depthOrArrayLayers,
     } = t.params;
+    t.skipIfTextureFormatNotSupported(format);
 
-    const viewDimension = '2d-array';
-    const size = chooseTextureSize({ minSize: 16, minBlocks: 4, format, viewDimension });
+    const [width, height] = chooseTextureSize({ minSize: 16, minBlocks: 4, format });
+    const size = { width, height, depthOrArrayLayers };
 
     const descriptor: GPUTextureDescriptor = {
       format,
       size,
       usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING,
       mipLevelCount: 3,
+      ...(t.isCompatibility && { textureBindingViewDimension: '2d-array' }),
     };
     const { texels, texture } = await createTextureWithRandomDataAndGetTexels(t, descriptor, {
       generator: makeRandomDepthComparisonTexelGenerator(descriptor, compare),
@@ -341,7 +341,7 @@ Parameters:
       };
     });
     const textureType = 'texture_depth_2d_array';
-    const viewDescriptor = {};
+    const viewDescriptor: GPUTextureViewDescriptor = { dimension: '2d-array' };
     const results = await doTextureCalls(
       t,
       texture,
@@ -393,12 +393,10 @@ Parameters:
       .combine('A', ['i32', 'u32'] as const)
       .combine('compare', kCompareFunctions)
   )
-  .beforeAllSubcases(t => {
-    t.skipIfTextureViewDimensionNotSupported('cube-array');
-    t.selectDeviceForTextureFormatOrSkipTestCase(t.params.format);
-  })
   .fn(async t => {
     const { format, A, stage, samplePoints, mode, filt: minFilter, compare } = t.params;
+    t.skipIfTextureViewDimensionNotSupported('cube-array');
+    t.skipIfTextureFormatNotSupported(t.params.format);
 
     const viewDimension: GPUTextureViewDimension = 'cube-array';
     const size = chooseTextureSize({ minSize: 8, minBlocks: 2, format, viewDimension });
