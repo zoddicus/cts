@@ -431,7 +431,8 @@ g.test('vertex_attribute_shaderLocation_unique')
 g.test('vertex_shader_input_location_limit')
   .desc(
     `Test that vertex shader's input's location decoration must be less than maxVertexAttributes.
-   - Test for shaderLocation 0, 1, limit - 1, limit, MAX_I32 (the WGSL spec requires a non-negative i32)`
+   - Test for shaderLocation 0, 1, limit - 1, limit, 4095 (functional limit for some platforms,
+     and far beyond what should be seen on real devices)`
   )
   .paramsSubcasesOnly(u =>
     u //
@@ -440,7 +441,7 @@ g.test('vertex_shader_input_location_limit')
         { mult: 0, add: 1 },
         { mult: 1, add: -1 },
         { mult: 1, add: 0 },
-        { mult: 0, add: 2 ** 31 - 1 },
+        { mult: 0, add: 4095 },
       ])
   )
   .fn(t => {
